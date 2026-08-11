@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { LjLogo } from '@/components/lj-logo';
 
 export default function Home() {
   // IntersectionObserver for fade-up scroll animations (matches original design behaviour)
@@ -42,20 +43,14 @@ export default function Home() {
 
   return (
     <main className="bg-background text-foreground min-h-screen">
-      {/* NAV */}
+      {/* NAV — overlays hero (dark image) so use the LIGHT logo variant.
+          mix-blend-difference keeps it readable on any backdrop. */}
       <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5vw] py-[26px] text-white mix-blend-difference">
         <div
-          className="flex items-center gap-2.5 text-[15px] tracking-[0.35em]"
+          className="flex items-center gap-3 text-[15px] tracking-[0.35em]"
           style={{ fontFamily: 'var(--font-jost)' }}
         >
-          <div className="w-[30px] h-[30px] rounded-full border border-current flex items-center justify-center">
-            <span
-              className="text-[19px] leading-none"
-              style={{ fontFamily: 'var(--font-alex-brush)' }}
-            >
-              lj
-            </span>
-          </div>
+          <LjLogo variant="light" size={36} alt="LJ Fashion" />
           <span>LJ&nbsp;FASHION</span>
         </div>
         <div className="hidden md:flex gap-9 text-xs tracking-[0.18em] uppercase">
@@ -344,19 +339,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
+      {/* FOOTER — dark ink background → use the LIGHT logo variant */}
       <footer
         id="contact"
         className="text-center pt-[60px] pb-[30px] px-[6vw]"
         style={{ background: 'var(--ink)', color: '#DCD3C2' }}
       >
-        <div className="mx-auto mb-5 w-[30px] h-[30px] rounded-full border border-[#DCD3C2] flex items-center justify-center">
-          <span
-            className="text-[19px] leading-none"
-            style={{ fontFamily: 'var(--font-alex-brush)' }}
-          >
-            lj
-          </span>
+        <div className="mx-auto mb-5 flex items-center justify-center">
+          <LjLogo variant="light" size={48} alt="LJ Fashion" />
         </div>
         <div
           className="flex justify-center gap-8 flex-wrap text-[11px] tracking-[0.2em] uppercase mb-[26px]"
