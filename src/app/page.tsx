@@ -85,6 +85,52 @@ export default function Home() {
               'linear-gradient(0deg, rgba(20,16,12,0.55) 0%, rgba(20,16,12,0.08) 42%, transparent 70%)',
           }}
         />
+
+        {/* BOLD LJ LOGO WATERMARK — large, right-side, with a dark radial glow
+            backdrop and double drop-shadow for maximum contrast against both
+            the lighter top gradient and the darker bottom overlay. The radial
+            backdrop acts as a "spotlight" that makes the thin-line monogram
+            read as bold and intentional. Light ink variant used because the
+            hero's mid-section sits on a medium-to-dark tone. */}
+        <div
+          className="absolute z-[1] pointer-events-none flex items-center justify-center"
+          style={{
+            top: '50%',
+            right: '5vw',
+            transform: 'translateY(-50%)',
+          }}
+          aria-hidden="true"
+        >
+          {/* Soft dark radial backdrop — creates contrast behind the thin-line logo */}
+          <div
+            className="absolute"
+            style={{
+              width: 'clamp(220px,32vw,460px)',
+              height: 'clamp(220px,32vw,460px)',
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle, rgba(20,16,12,0.55) 0%, rgba(20,16,12,0.32) 45%, rgba(20,16,12,0) 72%)',
+            }}
+          />
+          {/* The logo itself — light ink with strong drop-shadow for boldness.
+              Filter is applied to the wrapper div so the shadow renders on the
+              logo's actual stroke pixels (not the bounding box). */}
+          <div
+            style={{
+              filter:
+                'drop-shadow(0 4px 18px rgba(0,0,0,0.55)) drop-shadow(0 1px 4px rgba(0,0,0,0.45))',
+            }}
+            className="relative flex items-center justify-center"
+          >
+            <LjLogo
+              variant="light"
+              size={280}
+              alt=""
+              className="w-[clamp(160px,24vw,340px)] h-[clamp(160px,24vw,340px)] max-w-[40vw] max-h-[60vh]"
+            />
+          </div>
+        </div>
+
         <div className="relative z-[2] w-full px-[5vw] pb-[68px] text-white flex flex-col items-start gap-[18px]">
           <span className="lj-eyebrow" style={{ color: '#EFE6D4' }}>
             Designed Beyond the Trend
