@@ -1,9 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LjLogo } from '@/components/lj-logo';
 
 export default function Home() {
+  // Mobile nav toggle
+  const [menuOpen, setMenuOpen] = useState(false);
+
   // IntersectionObserver for fade-up scroll animations (matches original design behaviour)
   useEffect(() => {
     const els = document.querySelectorAll('.lj-fade-up');
@@ -44,15 +47,17 @@ export default function Home() {
   return (
     <main className="bg-background text-foreground min-h-screen">
       {/* NAV — overlays hero (dark image) so use the LIGHT logo variant.
-          mix-blend-difference keeps it readable on any backdrop. */}
-      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5vw] py-[26px] text-white mix-blend-difference">
+          mix-blend-difference keeps it readable on any backdrop.
+          Mobile: hamburger toggles a dropdown panel. */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5vw] py-[18px] sm:py-[26px] text-white mix-blend-difference">
         <div
-          className="flex items-center gap-3 text-[15px] tracking-[0.35em]"
+          className="flex items-center gap-2 sm:gap-3 text-[13px] sm:text-[15px] tracking-[0.3em] sm:tracking-[0.35em]"
           style={{ fontFamily: 'var(--font-jost)' }}
         >
-          <LjLogo variant="light" size={36} alt="LJ Fashion" />
+          <LjLogo variant="light" size={32} alt="LJ Fashion" />
           <span>LJ&nbsp;FASHION</span>
         </div>
+        {/* Desktop nav */}
         <div className="hidden md:flex gap-9 text-xs tracking-[0.18em] uppercase">
           <a href="#new" className="opacity-85 hover:opacity-100 transition-opacity">
             New In
@@ -67,7 +72,39 @@ export default function Home() {
             Contact
           </a>
         </div>
+        {/* Mobile hamburger */}
+        <button
+          type="button"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((v) => !v)}
+          className="md:hidden flex flex-col justify-center items-end gap-[5px] p-2 -mr-2"
+        >
+          <span
+            className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? 'translate-y-[6px] rotate-45' : ''}`}
+          />
+          <span
+            className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`}
+          />
+          <span
+            className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? '-translate-y-[6px] -rotate-45' : ''}`}
+          />
+        </button>
       </nav>
+      {/* Mobile dropdown panel */}
+      {menuOpen && (
+        <div
+          className="md:hidden fixed top-[60px] left-0 right-0 z-40 bg-[var(--ink)]/95 backdrop-blur-sm text-white py-6 px-[5vw]"
+          style={{ background: 'rgba(28,25,23,0.96)' }}
+        >
+          <div className="flex flex-col gap-5 text-sm tracking-[0.18em] uppercase">
+            <a href="#new" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">New In</a>
+            <a href="#shop" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Shop</a>
+            <a href="#story" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Our Story</a>
+            <a href="#contact" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Contact</a>
+          </div>
+        </div>
+      )}
 
       {/* HERO */}
       <section className="relative h-screen min-h-[640px] flex items-end overflow-hidden">
@@ -86,19 +123,14 @@ export default function Home() {
           }}
         />
 
-        {/* BOLD LJ LOGO WATERMARK — large, right-side, with a dark radial glow
-            backdrop and double drop-shadow for maximum contrast against both
-            the lighter top gradient and the darker bottom overlay. The radial
-            backdrop acts as a "spotlight" that makes the thin-line monogram
-            read as bold and intentional. Light ink variant used because the
-            hero's mid-section sits on a medium-to-dark tone. */}
+        {/* BOLD LJ LOGO WATERMARK — large, right-side on desktop; smaller
+            and centered behind the hero text on mobile so it doesn't crowd
+            the headline. Dark radial backdrop + double drop-shadow make the
+            thin-line monogram read as bold. */}
         <div
-          className="absolute z-[1] pointer-events-none flex items-center justify-center"
-          style={{
-            top: '50%',
-            right: '5vw',
-            transform: 'translateY(-50%)',
-          }}
+          className="absolute z-[1] pointer-events-none flex items-center justify-center
+                     right-[5vw] top-1/2 -translate-y-1/2
+                     max-md:right-auto max-md:top-[42%] max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2"
           aria-hidden="true"
         >
           {/* Soft dark radial backdrop — creates contrast behind the thin-line logo */}
@@ -114,36 +146,39 @@ export default function Home() {
           />
           {/* The logo itself — light ink with strong drop-shadow for boldness.
               Filter is applied to the wrapper div so the shadow renders on the
-              logo's actual stroke pixels (not the bounding box). */}
+              logo's actual stroke pixels (not the bounding box).
+              Mobile: smaller and lower opacity so it sits as a watermark behind
+              the hero text without competing for attention. */}
           <div
             style={{
               filter:
                 'drop-shadow(0 4px 18px rgba(0,0,0,0.55)) drop-shadow(0 1px 4px rgba(0,0,0,0.45))',
             }}
-            className="relative flex items-center justify-center"
+            className="relative flex items-center justify-center max-md:opacity-60"
           >
             <LjLogo
               variant="light"
               size={280}
               alt=""
-              className="w-[clamp(160px,24vw,340px)] h-[clamp(160px,24vw,340px)] max-w-[40vw] max-h-[60vh]"
+              className="w-[clamp(140px,22vw,340px)] h-[clamp(140px,22vw,340px)] max-md:w-[clamp(180px,55vw,260px)] max-md:h-[clamp(180px,55vw,260px)]"
             />
           </div>
         </div>
 
-        <div className="relative z-[2] w-full px-[5vw] pb-[68px] text-white flex flex-col items-start gap-[18px]">
+        {/* Hero text — z-[3] so it sits above the watermark on mobile */}
+        <div className="relative z-[3] w-full px-[5vw] pb-[60px] sm:pb-[68px] text-white flex flex-col items-start gap-[14px] sm:gap-[18px] max-w-[640px]">
           <span className="lj-eyebrow" style={{ color: '#EFE6D4' }}>
             Designed Beyond the Trend
           </span>
           <h1
-            className="lj-heading text-[clamp(40px,7vw,84px)] leading-[1.02] max-w-[900px] font-normal"
+            className="lj-heading text-[clamp(34px,7vw,84px)] leading-[1.05] max-w-[900px] font-normal"
           >
             Your wardrobe,
             <br />
             working for you.
           </h1>
           <p
-            className="text-[15px] leading-[1.7] max-w-[420px] font-light"
+            className="text-[14px] sm:text-[15px] leading-[1.7] max-w-[420px] font-light"
             style={{ color: '#F2EBDD' }}
           >
             Versatile, comfortable, timeless — pieces you&apos;ll return to season after
@@ -160,7 +195,7 @@ export default function Home() {
       </section>
 
       {/* INTRO */}
-      <section className="lj-fade-up py-[120px] px-[5vw] pb-[100px] grid gap-9 max-w-[760px] mx-auto text-center">
+      <section className="lj-fade-up py-[80px] sm:py-[120px] px-[5vw] pb-[70px] sm:pb-[100px] grid gap-7 sm:gap-9 max-w-[760px] mx-auto text-center">
         <h2
           className="text-[clamp(26px,3.4vw,40px)] leading-[1.35] font-normal italic"
           style={{ fontFamily: 'var(--font-cormorant)', color: 'var(--ink-soft)' }}
@@ -169,7 +204,7 @@ export default function Home() {
           between comfort and style.&rdquo;
         </h2>
         <div
-          className="flex justify-center items-center gap-[22px] text-[11px] tracking-[0.28em] uppercase flex-wrap"
+          className="flex justify-center items-center gap-[14px] sm:gap-[22px] text-[10px] sm:text-[11px] tracking-[0.24em] sm:tracking-[0.28em] uppercase flex-wrap"
           style={{ color: 'var(--taupe)' }}
         >
           <span>Quality</span>
@@ -185,7 +220,7 @@ export default function Home() {
         id="new"
         className="lj-fade-up relative grid grid-cols-1 min-h-[78vh] md:grid-cols-[1.15fr_0.85fr]"
       >
-        <div className="min-h-[420px] relative overflow-hidden">
+        <div className="min-h-[340px] sm:min-h-[420px] relative overflow-hidden">
           <div
             className="absolute inset-0"
             style={{ background: 'linear-gradient(150deg,#EFE6D5,#D8C6A9 45%,#B49E7E 100%)' }}
@@ -194,12 +229,12 @@ export default function Home() {
           />
         </div>
         <div
-          className="flex flex-col justify-center gap-5 py-[64px] px-[8%]"
+          className="flex flex-col justify-center gap-5 py-[48px] sm:py-[64px] px-[8%]"
           style={{ background: 'var(--cream-deep)' }}
         >
           <span className="lj-eyebrow">New In</span>
-          <h2 className="lj-heading text-[clamp(30px,3.6vw,48px)]">New Arrivals</h2>
-          <p className="text-[14.5px] leading-[1.8] max-w-[340px]" style={{ color: 'var(--ink-soft)' }}>
+          <h2 className="lj-heading text-[clamp(28px,3.6vw,48px)]">New Arrivals</h2>
+          <p className="text-[14px] sm:text-[14.5px] leading-[1.8] max-w-[340px]" style={{ color: 'var(--ink-soft)' }}>
             The latest pieces to enter the LJ wardrobe — fresh silhouettes, soft fabrics,
             and refined details designed to feel as good as they look.
           </p>
@@ -218,12 +253,12 @@ export default function Home() {
       {/* BESTSELLERS */}
       <section className="lj-fade-up relative grid grid-cols-1 min-h-[78vh] md:grid-cols-[0.85fr_1.15fr]">
         <div
-          className="flex flex-col justify-center gap-5 py-[64px] px-[8%] order-2 md:order-1"
+          className="flex flex-col justify-center gap-5 py-[48px] sm:py-[64px] px-[8%] order-2 md:order-1"
           style={{ background: 'var(--cream-deep)' }}
         >
           <span className="lj-eyebrow">Fan Favorites</span>
-          <h2 className="lj-heading text-[clamp(30px,3.6vw,48px)]">Bestsellers</h2>
-          <p className="text-[14.5px] leading-[1.8] max-w-[340px]" style={{ color: 'var(--ink-soft)' }}>
+          <h2 className="lj-heading text-[clamp(28px,3.6vw,48px)]">Bestsellers</h2>
+          <p className="text-[14px] sm:text-[14.5px] leading-[1.8] max-w-[340px]" style={{ color: 'var(--ink-soft)' }}>
             The pieces our customers keep coming back for — loved for their flattering fit,
             considered fabrics, and quiet, timeless style.
           </p>
@@ -237,7 +272,7 @@ export default function Home() {
             </span>
           </a>
         </div>
-        <div className="min-h-[420px] relative overflow-hidden order-1 md:order-2">
+        <div className="min-h-[340px] sm:min-h-[420px] relative overflow-hidden order-1 md:order-2">
           <div
             className="absolute inset-0"
             style={{ background: 'linear-gradient(200deg,#E7DAC4,#C3AF8F 50%,#8E7A61 100%)' }}
@@ -248,17 +283,17 @@ export default function Home() {
       </section>
 
       {/* FIND YOUR SIGNATURE */}
-      <section id="shop" className="lj-fade-up py-[120px] px-[5vw] text-center">
+      <section id="shop" className="lj-fade-up py-[80px] sm:py-[120px] px-[5vw] text-center">
         <span className="lj-eyebrow block mb-3.5">Shop LJ</span>
-        <h2 className="lj-heading text-[clamp(30px,4vw,52px)] mb-4">Find Your Signature.</h2>
+        <h2 className="lj-heading text-[clamp(28px,4vw,52px)] mb-4">Find Your Signature.</h2>
         <p
-          className="max-w-[480px] mx-auto mb-16 text-[14.5px] leading-[1.8]"
+          className="max-w-[480px] mx-auto mb-10 sm:mb-16 text-[14px] sm:text-[14.5px] leading-[1.8] px-2"
           style={{ color: 'var(--ink-soft)' }}
         >
           Explore our collection of thoughtfully selected pieces, designed for effortless
           everyday style.
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-7 max-w-[920px] mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 max-w-[920px] mx-auto">
           {categories.map((cat) => (
             <a key={cat.label} href="#" className="flex flex-col items-center gap-5 group">
               <div
@@ -270,7 +305,7 @@ export default function Home() {
                 aria-label={`${cat.label} collection`}
               />
               <span
-                className="text-xs tracking-[0.22em] uppercase"
+                className="text-[11px] sm:text-xs tracking-[0.2em] sm:tracking-[0.22em] uppercase"
                 style={{ color: 'var(--ink-soft)' }}
               >
                 {cat.label}
@@ -280,8 +315,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* OUR PROMISE */}
-      <section className="lj-fade-up relative min-h-[64vh] flex items-center justify-center text-center text-white py-[100px] px-[6vw]">
+      {/* OUR PROMISE — dark interstitial with subtle embossed LJ watermark
+          behind the content. Watermark is large, low-opacity, and centered
+          so it reads as a textured brand mark rather than a focal element. */}
+      <section className="lj-fade-up relative min-h-[64vh] flex items-center justify-center text-center text-white py-[80px] sm:py-[100px] px-[6vw] overflow-hidden">
         <div
           className="absolute inset-0"
           style={{ background: 'linear-gradient(180deg,#3A342B,#1C1815 70%)' }}
@@ -293,18 +330,38 @@ export default function Home() {
               'radial-gradient(60% 60% at 50% 20%, rgba(230,214,182,0.16), transparent 70%)',
           }}
         />
-        <div className="relative z-[2] max-w-[600px]">
+        {/* Subtle embossed LJ watermark — large, behind content, very low opacity */}
+        <div
+          className="absolute z-[1] pointer-events-none flex items-center justify-center inset-0"
+          aria-hidden="true"
+        >
+          <div
+            style={{
+              filter:
+                'drop-shadow(0 2px 12px rgba(0,0,0,0.4))',
+            }}
+            className="relative flex items-center justify-center opacity-[0.10]"
+          >
+            <LjLogo
+              variant="light"
+              size={420}
+              alt=""
+              className="w-[clamp(280px,40vw,520px)] h-[clamp(280px,40vw,520px)] max-w-[80vw] max-h-[80vh]"
+            />
+          </div>
+        </div>
+        <div className="relative z-[2] max-w-[600px] px-2">
           <span className="lj-eyebrow" style={{ color: '#C9B896' }}>
             Our Promise
           </span>
-          <h2 className="lj-heading text-[clamp(28px,3.8vw,46px)] my-[18px] mx-0 font-normal">
+          <h2 className="lj-heading text-[clamp(26px,3.8vw,46px)] my-[16px] sm:my-[18px] mx-0 font-normal leading-[1.15]">
             Every LJ piece is selected or designed with intention.
           </h2>
-          <p className="text-[14.5px] leading-[1.85] mb-7" style={{ color: '#EAE1CF' }}>
+          <p className="text-[14px] sm:text-[14.5px] leading-[1.85] mb-7 px-2" style={{ color: '#EAE1CF' }}>
             We care about how it looks, how it feels, and how easily it becomes part of
             your wardrobe.
           </p>
-          <p className="lj-heading italic text-[19px] leading-[1.7]">
+          <p className="lj-heading italic text-[18px] sm:text-[19px] leading-[1.7]">
             <b className="font-medium not-italic">Timeless. Effortless. Intentional.</b>
             <br />
             That&apos;s LJ.
@@ -315,23 +372,23 @@ export default function Home() {
       {/* STORY TEASER */}
       <section
         id="story"
-        className="lj-fade-up grid grid-cols-1 min-h-[70vh] md:grid-cols-2"
+        className="lj-fade-up grid grid-cols-1 min-h-[60vh] sm:min-h-[70vh] md:grid-cols-2"
       >
         <div
-          className="min-h-[380px]"
+          className="min-h-[300px] sm:min-h-[380px]"
           style={{ background: 'linear-gradient(135deg,#E3D6BE,#B7A180 55%,#75634B)' }}
           role="img"
           aria-label="Founder portrait, editorial style"
         />
         <div
-          className="flex flex-col justify-center gap-[18px] py-[70px] px-[8%]"
+          className="flex flex-col justify-center gap-[16px] sm:gap-[18px] py-[56px] sm:py-[70px] px-[8%]"
           style={{ background: 'var(--cream)' }}
         >
           <span className="lj-eyebrow">Our Story</span>
-          <h2 className="lj-heading text-[clamp(28px,3.4vw,44px)] leading-[1.15]">
+          <h2 className="lj-heading text-[clamp(26px,3.4vw,44px)] leading-[1.15]">
             Where soft meets statement.
           </h2>
-          <p className="text-[14.5px] leading-[1.85] max-w-[420px]" style={{ color: 'var(--ink-soft)' }}>
+          <p className="text-[14px] sm:text-[14.5px] leading-[1.85] max-w-[420px]" style={{ color: 'var(--ink-soft)' }}>
             Founded by Linda Joweigha, LJ was created from a love for clean design,
             effortless elegance, and clothing that feels as good as it looks. Fashion should
             complement who you are — not overwhelm it.
@@ -348,8 +405,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CLOSING */}
-      <section className="lj-fade-up relative min-h-[88vh] flex items-center justify-center text-center overflow-hidden">
+      {/* CLOSING — bold LJ watermark behind the call-to-action, matching
+          the hero treatment. Watermark sits behind the text content with a
+          dark radial spotlight for contrast. */}
+      <section className="lj-fade-up relative min-h-[78vh] sm:min-h-[88vh] flex items-center justify-center text-center overflow-hidden">
         <div
           className="absolute inset-0"
           style={{
@@ -363,22 +422,52 @@ export default function Home() {
           className="absolute inset-0"
           style={{ background: 'linear-gradient(0deg, rgba(15,12,9,0.55), transparent 55%)' }}
         />
+        {/* Bold LJ watermark — centered, with dark radial backdrop */}
+        <div
+          className="absolute z-[1] pointer-events-none flex items-center justify-center inset-0"
+          aria-hidden="true"
+        >
+          <div
+            className="absolute"
+            style={{
+              width: 'clamp(260px,42vw,560px)',
+              height: 'clamp(260px,42vw,560px)',
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle, rgba(20,16,12,0.45) 0%, rgba(20,16,12,0.22) 50%, rgba(20,16,12,0) 72%)',
+            }}
+          />
+          <div
+            style={{
+              filter:
+                'drop-shadow(0 4px 18px rgba(0,0,0,0.55)) drop-shadow(0 1px 4px rgba(0,0,0,0.45))',
+            }}
+            className="relative flex items-center justify-center opacity-90"
+          >
+            <LjLogo
+              variant="light"
+              size={320}
+              alt=""
+              className="w-[clamp(180px,30vw,400px)] h-[clamp(180px,30vw,400px)] max-w-[70vw] max-h-[60vh]"
+            />
+          </div>
+        </div>
         <div className="relative z-[2] text-white px-[6vw]">
-          <span className="lj-script block mb-1.5 text-[clamp(38px,6vw,68px)]">
+          <span className="lj-script block mb-1.5 text-[clamp(32px,6vw,68px)]">
             Your style. Your story.
           </span>
           <h2
-            className="text-[clamp(20px,2.6vw,28px)] tracking-[0.14em] font-normal mb-[18px] uppercase"
+            className="text-[clamp(18px,2.6vw,28px)] tracking-[0.14em] font-normal mb-[18px] uppercase"
             style={{ fontFamily: 'var(--font-jost)' }}
           >
             Your LJ.
           </h2>
-          <p className="text-[14.5px] mb-[34px]" style={{ color: '#F2EADA' }}>
+          <p className="text-[14px] sm:text-[14.5px] mb-[30px] sm:mb-[34px]" style={{ color: '#F2EADA' }}>
             Discover pieces made to become part of your everyday story.
           </p>
           <a
             href="#shop"
-            className="inline-block px-[42px] py-4 border border-white text-[11px] tracking-[0.26em] uppercase hover:bg-white hover:text-[var(--ink)] transition-all"
+            className="inline-block px-[36px] sm:px-[42px] py-4 border border-white text-[11px] tracking-[0.24em] sm:tracking-[0.26em] uppercase hover:bg-white hover:text-[var(--ink)] transition-all"
           >
             Shop LJ Fashion
           </a>
@@ -388,14 +477,14 @@ export default function Home() {
       {/* FOOTER — dark ink background → use the LIGHT logo variant */}
       <footer
         id="contact"
-        className="text-center pt-[60px] pb-[30px] px-[6vw]"
+        className="text-center pt-[48px] sm:pt-[60px] pb-[30px] px-[6vw]"
         style={{ background: 'var(--ink)', color: '#DCD3C2' }}
       >
         <div className="mx-auto mb-5 flex items-center justify-center">
-          <LjLogo variant="light" size={48} alt="LJ Fashion" />
+          <LjLogo variant="light" size={44} alt="LJ Fashion" />
         </div>
         <div
-          className="flex justify-center gap-8 flex-wrap text-[11px] tracking-[0.2em] uppercase mb-[26px]"
+          className="flex justify-center gap-x-6 gap-y-3 flex-wrap text-[10px] sm:text-[11px] tracking-[0.2em] uppercase mb-[26px] max-w-[600px] mx-auto"
           style={{ color: '#B8AD97' }}
         >
           <a href="#shop" className="hover:text-white transition-colors">Women</a>
