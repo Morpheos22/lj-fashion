@@ -214,3 +214,43 @@
   animation-delay: -4s;
   will-change: transform;
 }
+
+/* Gallery modal — full-screen lightbox with a smooth fade + scale-in.
+   The backdrop is a dark blur; the image scales up from a small offset
+   to give a sense of dynamism when opening. */
+@keyframes lj-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes lj-modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.lj-modal-backdrop {
+  animation: lj-modal-fade-in 0.3s ease-out forwards;
+}
+
+.lj-modal-image {
+  animation: lj-modal-scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lj-modal-backdrop,
+  .lj-modal-image {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

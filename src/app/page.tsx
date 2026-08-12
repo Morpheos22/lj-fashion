@@ -1,12 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { LjLogo } from '@/components/lj-logo';
 
 export default function Home() {
   // Mobile nav toggle
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Gallery modal — index of the currently open image, or null if closed
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
 
   // IntersectionObserver for fade-up scroll animations (matches original design behaviour)
   useEffect(() => {
@@ -26,28 +29,93 @@ export default function Home() {
     return () => obs.disconnect();
   }, []);
 
+  const INSTAGRAM_URL = 'https://www.instagram.com/lindajoweigha?igsh=ZmFoaTA4eTRveTBw&utm_source=qr';
+  const TIKTOK_URL = 'https://www.tiktok.com/@lindajoweigha';
+
   const categories = [
     {
       label: 'Dresses',
       img: '/cat-dresses.jpg',
       alt: 'Pink maxi dresses and kaftans on hangers',
+      href: INSTAGRAM_URL,
     },
     {
       label: 'Modest Wear',
       img: '/cat-modest-wear.jpg',
       alt: 'Model in powder blue kaftan with white wide-leg trousers',
+      href: INSTAGRAM_URL,
     },
     {
       label: 'Occasion Wear',
       img: '/cat-occasion-wear.jpg',
       alt: 'Yellow eyelet lace dress with rhinestone detailing on hanger',
+      href: TIKTOK_URL,
     },
     {
       label: 'Bottoms',
       img: '/cat-bottoms.jpg',
       alt: 'Wide-leg trousers in burgundy, white, and patterned blue on hangers',
+      href: TIKTOK_URL,
     },
   ];
+
+  // Gallery images — each has a caption for the modal view
+  const galleryImages = [
+    {
+      src: '/gallery-1.jpg',
+      alt: 'LJ look — brown V-neck blouse with wide-leg black trousers, styled with a monogram bag',
+      caption: 'The Earth Tone Edit',
+      subcaption: 'Brown V-neck blouse · wide-leg trousers · monogram bag',
+    },
+    {
+      src: '/gallery-2.jpg',
+      alt: 'LJ look — chocolate brown two-piece set with blouse and high-waisted shorts',
+      caption: 'The Chocolate Set',
+      subcaption: 'Two-piece co-ord · blouse · high-waisted shorts',
+    },
+    {
+      src: '/gallery-3.jpg',
+      alt: 'LJ look — black textured top layered over white shirt with asymmetrical striped skirt',
+      caption: 'The Layered Statement',
+      subcaption: 'Black textured top · striped shirt · asymmetrical skirt',
+    },
+    {
+      src: '/gallery-4.jpg',
+      alt: 'LJ look — long black button-front abaya with subtle tiered hem',
+      caption: 'The Black Abaya',
+      subcaption: 'Button-front maxi · tiered hem · modest silhouette',
+    },
+  ];
+
+  // Gallery modal navigation
+  const closeGallery = useCallback(() => setGalleryIndex(null), []);
+  const nextImage = useCallback(() => {
+    setGalleryIndex((curr) =>
+      curr === null ? null : (curr + 1) % galleryImages.length
+    );
+  }, [galleryImages.length]);
+  const prevImage = useCallback(() => {
+    setGalleryIndex((curr) =>
+      curr === null ? null : (curr - 1 + galleryImages.length) % galleryImages.length
+    );
+  }, [galleryImages.length]);
+
+  // Lock body scroll when modal is open + handle Escape/arrow keys
+  useEffect(() => {
+    if (galleryIndex !== null) {
+      document.body.style.overflow = 'hidden';
+      const handleKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') closeGallery();
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+      };
+      window.addEventListener('keydown', handleKey);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKey);
+      };
+    }
+  }, [galleryIndex, closeGallery, nextImage, prevImage]);
 
   return (
     <main className="bg-background text-foreground min-h-screen">
@@ -417,7 +485,14 @@ export default function Home() {
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 max-w-[920px] mx-auto">
           {categories.map((cat) => (
-            <a key={cat.label} href="#bestsellers" className="flex flex-col items-center gap-5 group">
+            <a
+              key={cat.label}
+              href={cat.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-5 group"
+              aria-label={`Browse ${cat.label} on ${cat.href.includes('instagram') ? 'Instagram' : 'TikTok'}`}
+            >
               {/* Circular image tile — real product photo with object-cover.
                   Subtle inner ring + slow scale zoom on hover for editorial feel.
                   A soft cream edge vignette is baked into the image so the
@@ -549,11 +624,9 @@ export default function Home() {
       </section>
 
       {/* GALLERY — editorial mosaic of lifestyle and product shots.
-          Positioned right after Our Story (adjacent to it) and before
-          the closing CTA. Images use the same warm cream treatment as
-          the rest of the site for seamless theme harmony.
-          Layout: asymmetric mosaic — 2 tall images flanking 2 shorter
-          ones, with subtle hover zoom on each tile. */}
+          Clicking any image opens a full-screen modal lightbox that
+          captures the dynamism of the image with a scale-in animation,
+          caption, and prev/next navigation. */}
       <section id="gallery" className="lj-fade-up py-[80px] sm:py-[120px] px-[5vw]" style={{ background: 'var(--cream)' }}>
         <div className="text-center mb-12 sm:mb-16">
           <span className="lj-eyebrow block mb-3.5">Gallery</span>
@@ -563,7 +636,7 @@ export default function Home() {
             style={{ color: 'var(--ink-soft)' }}
           >
             A glimpse of LJ pieces as they live in the world — styled, worn, and
-            captured in the everyday.
+            captured in the everyday. Tap any image to view in full.
           </p>
         </div>
 
@@ -572,84 +645,133 @@ export default function Home() {
             images 2 & 4 spanning 1 row (shorter).
             Mobile: 2 columns, all equal height. */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 max-w-[1200px] mx-auto md:auto-rows-[180px] sm:auto-rows-[220px]">
-          {/* Image 1 — tall (spans 2 rows on desktop) */}
-          <a
-            href="#gallery"
-            className="group relative overflow-hidden md:row-span-2 aspect-[3/4] md:aspect-auto block"
-            aria-label="Gallery image 1 — brown blouse with black trousers"
-          >
-            <Image
-              src="/gallery-1.jpg"
-              alt="LJ look — brown V-neck blouse with wide-leg black trousers, styled with a monogram bag"
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
-            />
-            <div
-              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
-              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
-              aria-hidden="true"
-            />
-          </a>
-          {/* Image 2 — short (1 row on desktop) */}
-          <a
-            href="#gallery"
-            className="group relative overflow-hidden aspect-[3/4] md:aspect-auto block"
-            aria-label="Gallery image 2 — brown two-piece set"
-          >
-            <Image
-              src="/gallery-2.jpg"
-              alt="LJ look — chocolate brown two-piece set with blouse and high-waisted shorts"
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
-            />
-            <div
-              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
-              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
-              aria-hidden="true"
-            />
-          </a>
-          {/* Image 3 — tall (spans 2 rows on desktop) */}
-          <a
-            href="#gallery"
-            className="group relative overflow-hidden md:row-span-2 aspect-[3/4] md:aspect-auto block"
-            aria-label="Gallery image 3 — black top with striped skirt"
-          >
-            <Image
-              src="/gallery-3.jpg"
-              alt="LJ look — black textured top layered over white shirt with asymmetrical striped skirt"
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
-            />
-            <div
-              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
-              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
-              aria-hidden="true"
-            />
-          </a>
-          {/* Image 4 — short (1 row on desktop) */}
-          <a
-            href="#gallery"
-            className="group relative overflow-hidden aspect-[3/4] md:aspect-auto block"
-            aria-label="Gallery image 4 — black abaya"
-          >
-            <Image
-              src="/gallery-4.jpg"
-              alt="LJ look — long black button-front abaya with subtle tiered hem"
-              fill
-              sizes="(max-width: 768px) 50vw, 25vw"
-              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
-            />
-            <div
-              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
-              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
-              aria-hidden="true"
-            />
-          </a>
+          {galleryImages.map((img, i) => (
+            <button
+              key={img.src}
+              type="button"
+              onClick={() => setGalleryIndex(i)}
+              className={`group relative overflow-hidden aspect-[3/4] md:aspect-auto block cursor-zoom-in ${i === 0 || i === 2 ? 'md:row-span-2' : ''}`}
+              aria-label={`Open gallery image ${i + 1}: ${img.caption}`}
+            >
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                quality={90}
+                className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+              />
+              <div
+                className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
+                style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
+                aria-hidden="true"
+              />
+              {/* Hover affordance — "View" hint */}
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                <span className="text-[10px] tracking-[0.32em] uppercase text-[var(--ink)] px-4 py-2 backdrop-blur-sm" style={{ background: 'rgba(248,243,234,0.88)' }}>
+                  View
+                </span>
+              </div>
+            </button>
+          ))}
         </div>
       </section>
+
+      {/* GALLERY MODAL — full-screen lightbox.
+          Renders when galleryIndex is not null. Features:
+          - Dark blurred backdrop with fade-in animation
+          - Image with a dynamic scale-in animation
+          - Caption + subcaption
+          - Prev / Next navigation buttons (circular, edges of screen)
+          - Close button (top-right)
+          - Keyboard: Escape to close, Arrow keys to navigate
+          - Click backdrop to close
+          - Body scroll locked while open */}
+      {galleryIndex !== null && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 lj-modal-backdrop"
+          style={{ background: 'rgba(20,16,12,0.92)', backdropFilter: 'blur(8px)' }}
+          onClick={closeGallery}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Gallery image ${galleryIndex + 1} of ${galleryImages.length}: ${galleryImages[galleryIndex].caption}`}
+        >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={closeGallery}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[102] w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+            aria-label="Close gallery"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {/* Previous button */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            className="absolute left-2 sm:left-6 z-[102] w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+            aria-label="Previous image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          {/* Next button */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            className="absolute right-2 sm:right-6 z-[102] w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+            aria-label="Next image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+
+          {/* Image + caption container — stopPropagation so clicks here don't close */}
+          <div
+            className="relative z-[101] max-w-[90vw] max-h-[90vh] flex flex-col items-center gap-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* The image — large, dynamic, with scale-in animation.
+                Key forces re-mount on navigation so the animation replays. */}
+            <div
+              key={galleryIndex}
+              className="lj-modal-image relative w-full flex items-center justify-center"
+              style={{ maxHeight: '78vh' }}
+            >
+              <Image
+                src={galleryImages[galleryIndex].src}
+                alt={galleryImages[galleryIndex].alt}
+                width={800}
+                height={1200}
+                quality={100}
+                className="w-auto h-auto max-w-full max-h-[78vh] object-contain"
+                style={{ filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.5))' }}
+                priority
+              />
+            </div>
+
+            {/* Caption */}
+            <div className="text-center text-white">
+              <p className="lj-heading text-[20px] sm:text-[24px] mb-1">
+                {galleryImages[galleryIndex].caption}
+              </p>
+              <p className="text-[11px] sm:text-[12px] tracking-[0.18em] uppercase text-white/60">
+                {galleryImages[galleryIndex].subcaption}
+              </p>
+              <p className="mt-3 text-[10px] tracking-[0.22em] uppercase text-white/40">
+                {galleryIndex + 1} / {galleryImages.length}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CLOSING — bold LJ watermark behind the call-to-action, matching
           the hero treatment. Watermark sits behind the text content with a
@@ -712,7 +834,9 @@ export default function Home() {
             Discover pieces made to become part of your everyday story.
           </p>
           <a
-            href="#shop"
+            href="https://www.instagram.com/lindajoweigha?igsh=ZmFoaTA4eTRveTBw&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-block px-[36px] sm:px-[42px] py-4 border border-white text-[11px] tracking-[0.24em] sm:tracking-[0.26em] uppercase hover:bg-white hover:text-[var(--ink)] transition-all"
           >
             Shop LJ Fashion
