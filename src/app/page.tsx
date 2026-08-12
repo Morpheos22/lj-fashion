@@ -244,30 +244,74 @@ export default function Home() {
             </span>
           </a>
         </div>
-        {/* 2-image editorial grid */}
+        {/* 2-image editorial grid — each tile is a hover group with
+            a slow scale zoom + cream gradient overlays (top & bottom)
+            for a magazine-print finish that ties the photos to the
+            cream section background. */}
         <div className="relative order-1 md:order-2 grid grid-cols-2 gap-2 sm:gap-3 p-4 sm:p-6 md:p-8" style={{ background: 'var(--cream)' }}>
-          {/* Image 1 — taller portrait, spans both rows on desktop */}
-          <div className="relative overflow-hidden col-span-1 row-span-2 min-h-[340px] sm:min-h-[480px] md:min-h-[560px]">
+          {/* Image 1 */}
+          <a
+            href="#shop"
+            className="group relative overflow-hidden col-span-1 row-span-2 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block"
+            aria-label="View bestseller — layered asymmetrical top with striped shirt"
+          >
             <Image
               src="/bestseller-1.jpg"
               alt="LJ bestseller — layered asymmetrical top with striped shirt"
               fill
               sizes="(max-width: 768px) 50vw, 35vw"
-              className="object-cover object-center"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
               priority={false}
             />
-          </div>
-          {/* Image 2 — portrait, right column */}
-          <div className="relative overflow-hidden col-span-1 row-span-2 min-h-[340px] sm:min-h-[480px] md:min-h-[560px]">
+            {/* Top cream fade — magazine-print effect, intensifies on hover */}
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-[22%] opacity-70 transition-opacity duration-500 group-hover:opacity-90"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, rgba(248,243,234,0) 100%)' }}
+              aria-hidden="true"
+            />
+            {/* Bottom cream-deep fade — grounds the image, intensifies on hover */}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] opacity-60 transition-opacity duration-500 group-hover:opacity-85"
+              style={{ background: 'linear-gradient(0deg, var(--cream-deep) 0%, rgba(241,233,219,0) 100%)' }}
+              aria-hidden="true"
+            />
+            {/* Hover "View" affordance — fades + lifts in on hover */}
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-6 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+              <span className="text-[10px] tracking-[0.32em] uppercase text-[var(--ink)] bg-[var(--cream)]/85 px-4 py-2 backdrop-blur-sm" style={{ background: 'rgba(248,243,234,0.88)' }}>
+                View Piece
+              </span>
+            </div>
+          </a>
+          {/* Image 2 */}
+          <a
+            href="#shop"
+            className="group relative overflow-hidden col-span-1 row-span-2 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block"
+            aria-label="View bestseller — long black button-up shirt dress with wide-leg trousers"
+          >
             <Image
               src="/bestseller-2.jpg"
               alt="LJ bestseller — long black button-up shirt dress with wide-leg trousers"
               fill
               sizes="(max-width: 768px) 50vw, 35vw"
-              className="object-cover object-center"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
               priority={false}
             />
-          </div>
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-[22%] opacity-70 transition-opacity duration-500 group-hover:opacity-90"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, rgba(248,243,234,0) 100%)' }}
+              aria-hidden="true"
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] opacity-60 transition-opacity duration-500 group-hover:opacity-85"
+              style={{ background: 'linear-gradient(0deg, var(--cream-deep) 0%, rgba(241,233,219,0) 100%)' }}
+              aria-hidden="true"
+            />
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-6 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+              <span className="text-[10px] tracking-[0.32em] uppercase text-[var(--ink)] bg-[var(--cream)]/85 px-4 py-2 backdrop-blur-sm" style={{ background: 'rgba(248,243,234,0.88)' }}>
+                View Piece
+              </span>
+            </div>
+          </a>
         </div>
       </section>
 
