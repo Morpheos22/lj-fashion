@@ -70,7 +70,7 @@ export default function Home() {
           <a href="#shop" className="opacity-85 hover:opacity-100 transition-opacity">
             Shop
           </a>
-          <a href="#story" className="opacity-85 hover:opacity-100 transition-opacity">
+          <a href="/our-story" className="opacity-85 hover:opacity-100 transition-opacity">
             Our Story
           </a>
           <a href="#contact" className="opacity-85 hover:opacity-100 transition-opacity">
@@ -105,7 +105,7 @@ export default function Home() {
           <div className="flex flex-col gap-5 text-sm tracking-[0.18em] uppercase">
             <a href="#bestsellers" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Bestsellers</a>
             <a href="#shop" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Shop</a>
-            <a href="#story" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Our Story</a>
+            <a href="/our-story" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Our Story</a>
             <a href="#contact" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Contact</a>
           </div>
         </div>
@@ -535,7 +535,7 @@ export default function Home() {
             complement who you are — not overwhelm it.
           </p>
           <a
-            href="#contact"
+            href="/our-story"
             className="group mt-2.5 inline-flex items-center gap-3 text-[11px] tracking-[0.24em] uppercase border-b border-current pb-1.5 w-fit hover:tracking-[0.32em] hover:gap-4 hover:opacity-70 transition-all"
           >
             Read Our Story
@@ -735,7 +735,7 @@ export default function Home() {
           <a href="#shop" className="hover:text-white transition-colors">Dresses</a>
           <a href="#shop" className="hover:text-white transition-colors">Modest Wear</a>
           <a href="#shop" className="hover:text-white transition-colors">Accessories</a>
-          <a href="#story" className="hover:text-white transition-colors">Our Story</a>
+          <a href="/our-story" className="hover:text-white transition-colors">Our Story</a>
           <a href="#contact" className="hover:text-white transition-colors">Contact</a>
         </div>
         <div className="text-[11px] tracking-[0.08em]" style={{ color: '#8A8072' }}>
