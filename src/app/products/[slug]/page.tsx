@@ -65,27 +65,19 @@ export default async function ProductPage({
 
       {/* Product detail */}
       <section className="grid grid-cols-1 md:grid-cols-2 min-h-[80vh]">
-        {/* Image — left on desktop, top on mobile */}
-        <div className="relative min-h-[60vh] md:min-h-[80vh] overflow-hidden order-1 p-6 sm:p-10 md:p-14" style={{ background: 'var(--cream-deep)' }}>
+        {/* Image — left on desktop, top on mobile. Uses high quality (100)
+            and object-contain so the ENTIRE garment is visible (no cropping).
+            The image sits on a cream-deep panel that frames it editorially. */}
+        <div className="relative min-h-[60vh] md:min-h-[80vh] overflow-hidden order-1 flex items-center justify-center p-6 sm:p-10 md:p-14" style={{ background: 'var(--cream-deep)' }}>
           <div className="relative w-full h-full min-h-[50vh] md:min-h-[70vh]">
             <Image
               src={product.image}
               alt={product.imageAlt}
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover object-center"
+              quality={100}
+              className="object-contain object-center"
               priority
-            />
-            {/* Soft cream edge blends the photo into the section */}
-            <div
-              className="pointer-events-none absolute inset-x-0 top-0 h-[15%]"
-              style={{ background: 'linear-gradient(180deg, var(--cream-deep) 0%, transparent 100%)' }}
-              aria-hidden="true"
-            />
-            <div
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-[15%]"
-              style={{ background: 'linear-gradient(0deg, var(--cream-deep) 0%, transparent 100%)' }}
-              aria-hidden="true"
             />
           </div>
         </div>
@@ -177,7 +169,9 @@ export default async function ProductPage({
           {/* CTA */}
           <div className="pt-4 border-t border-[var(--line)]">
             <a
-              href={`mailto:hello@ljfashion.com?subject=Enquiry: ${encodeURIComponent(product.name)}`}
+              href={`https://wa.me/2348131148006?text=${encodeURIComponent(`Hi LJ Fashion, I'd like to enquire about "${product.name}".`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-3 px-8 py-4 text-[11px] tracking-[0.28em] uppercase border border-current transition-all hover:bg-[var(--ink)] hover:text-[var(--cream)]"
               style={{ color: 'var(--ink)' }}
             >
@@ -185,7 +179,7 @@ export default async function ProductPage({
               <span>→</span>
             </a>
             <p className="mt-4 text-[12px] leading-[1.7]" style={{ color: 'var(--taupe)' }}>
-              Each LJ piece is made to order in our Lagos atelier. Please allow 7–10 business days for production and shipping within Nigeria.
+              Each LJ piece is made to order in our Lagos atelier. Tap to chat with us on WhatsApp — please allow 7–10 business days for production and shipping within Nigeria.
             </p>
           </div>
         </div>
