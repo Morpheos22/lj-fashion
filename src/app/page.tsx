@@ -170,6 +170,57 @@ export default function Home() {
           </div>
         </div>
 
+        {/* MODEL SILHOUETTES — extracted from the 3 bestseller images.
+            Positioned to flank the hero composition on desktop: two figures
+            on the left and far-right edges, each with a subtle independent
+            float animation for a quiet, breathing vibrancy. Hidden on mobile
+            to keep the small viewport clean (the LJ watermark suffices).
+            Each silhouette uses mix-blend-mode: multiply so it blends with
+            the hero gradient rather than sitting as a flat cutout. */}
+        <div
+          className="hidden md:block absolute inset-0 z-[1] pointer-events-none"
+          aria-hidden="true"
+        >
+          {/* Silhouette 1 — left side, mid-height, subtle opacity */}
+          <div
+            className="lj-silhouette-float absolute"
+            style={{
+              left: '8%',
+              bottom: '0%',
+              opacity: 0.42,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
+            }}
+          >
+            <Image
+              src="/silhouette-1.png"
+              alt=""
+              width={280}
+              height={500}
+              className="h-[42vh] w-auto"
+            />
+          </div>
+          {/* Silhouette 3 — far right, slightly taller, different animation timing */}
+          <div
+            className="lj-silhouette-float-3 absolute"
+            style={{
+              right: '4%',
+              bottom: '0%',
+              opacity: 0.38,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
+            }}
+          >
+            <Image
+              src="/silhouette-3.png"
+              alt=""
+              width={280}
+              height={500}
+              className="h-[46vh] w-auto"
+            />
+          </div>
+        </div>
+
         {/* Hero text — z-[3] so it sits above the watermark on mobile */}
         <div className="relative z-[3] w-full px-[5vw] pb-[60px] sm:pb-[68px] text-white flex flex-col items-start gap-[14px] sm:gap-[18px] max-w-[640px]">
           <span className="lj-eyebrow" style={{ color: '#EFE6D4' }}>
@@ -256,7 +307,7 @@ export default function Home() {
         <div className="relative order-1 md:order-2 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 p-4 sm:p-6 md:p-8" style={{ background: 'var(--cream)' }}>
           {/* Image 1 */}
           <a
-            href="#shop"
+            href="/products/layered-asymmetrical-top"
             className="group relative overflow-hidden col-span-1 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block"
             aria-label="View bestseller — layered asymmetrical top with striped shirt"
           >
@@ -289,7 +340,7 @@ export default function Home() {
           </a>
           {/* Image 2 */}
           <a
-            href="#shop"
+            href="/products/black-shirt-dress"
             className="group relative overflow-hidden col-span-1 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block"
             aria-label="View bestseller — long black button-up shirt dress with wide-leg trousers"
           >
@@ -320,7 +371,7 @@ export default function Home() {
           {/* Image 3 — spans full width on mobile (col-span-2) for editorial
               asymmetry; single column on desktop like the others */}
           <a
-            href="#shop"
+            href="/products/pink-striped-kaftan"
             className="group relative overflow-hidden col-span-2 md:col-span-1 min-h-[340px] sm:min-h-[400px] md:min-h-[560px] block"
             aria-label="View bestseller — pink striped kaftan maxi dress"
           >
@@ -491,6 +542,109 @@ export default function Home() {
             <span className="inline-block transition-transform group-hover:translate-x-1">
               →
             </span>
+          </a>
+        </div>
+      </section>
+
+      {/* GALLERY — editorial mosaic of lifestyle and product shots.
+          Positioned right after Our Story (adjacent to it) and before
+          the closing CTA. Images use the same warm cream treatment as
+          the rest of the site for seamless theme harmony.
+          Layout: asymmetric mosaic — 2 tall images flanking 2 shorter
+          ones, with subtle hover zoom on each tile. */}
+      <section id="gallery" className="lj-fade-up py-[80px] sm:py-[120px] px-[5vw]" style={{ background: 'var(--cream)' }}>
+        <div className="text-center mb-12 sm:mb-16">
+          <span className="lj-eyebrow block mb-3.5">Gallery</span>
+          <h2 className="lj-heading text-[clamp(28px,4vw,52px)] mb-4">In Real Life.</h2>
+          <p
+            className="max-w-[480px] mx-auto text-[14px] sm:text-[14.5px] leading-[1.8] px-2"
+            style={{ color: 'var(--ink-soft)' }}
+          >
+            A glimpse of LJ pieces as they live in the world — styled, worn, and
+            captured in the everyday.
+          </p>
+        </div>
+
+        {/* Mosaic grid — 4 images in an asymmetric editorial layout.
+            Desktop: 4 columns with images 1 & 3 spanning 2 rows (tall),
+            images 2 & 4 spanning 1 row (shorter).
+            Mobile: 2 columns, all equal height. */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 max-w-[1200px] mx-auto md:auto-rows-[180px] sm:auto-rows-[220px]">
+          {/* Image 1 — tall (spans 2 rows on desktop) */}
+          <a
+            href="#gallery"
+            className="group relative overflow-hidden md:row-span-2 aspect-[3/4] md:aspect-auto block"
+            aria-label="Gallery image 1 — brown blouse with black trousers"
+          >
+            <Image
+              src="/gallery-1.jpg"
+              alt="LJ look — brown V-neck blouse with wide-leg black trousers, styled with a monogram bag"
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
+              aria-hidden="true"
+            />
+          </a>
+          {/* Image 2 — short (1 row on desktop) */}
+          <a
+            href="#gallery"
+            className="group relative overflow-hidden aspect-[3/4] md:aspect-auto block"
+            aria-label="Gallery image 2 — brown two-piece set"
+          >
+            <Image
+              src="/gallery-2.jpg"
+              alt="LJ look — chocolate brown two-piece set with blouse and high-waisted shorts"
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
+              aria-hidden="true"
+            />
+          </a>
+          {/* Image 3 — tall (spans 2 rows on desktop) */}
+          <a
+            href="#gallery"
+            className="group relative overflow-hidden md:row-span-2 aspect-[3/4] md:aspect-auto block"
+            aria-label="Gallery image 3 — black top with striped skirt"
+          >
+            <Image
+              src="/gallery-3.jpg"
+              alt="LJ look — black textured top layered over white shirt with asymmetrical striped skirt"
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
+              aria-hidden="true"
+            />
+          </a>
+          {/* Image 4 — short (1 row on desktop) */}
+          <a
+            href="#gallery"
+            className="group relative overflow-hidden aspect-[3/4] md:aspect-auto block"
+            aria-label="Gallery image 4 — black abaya"
+          >
+            <Image
+              src="/gallery-4.jpg"
+              alt="LJ look — long black button-front abaya with subtle tiered hem"
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+            />
+            <div
+              className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
+              aria-hidden="true"
+            />
           </a>
         </div>
       </section>

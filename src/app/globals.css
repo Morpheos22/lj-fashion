@@ -181,4 +181,36 @@
     transform: none;
     transition: none;
   }
+  .lj-silhouette-float {
+    animation: none !important;
+  }
+}
+
+/* Hero silhouette float — a slow, subtle vertical drift that gives the
+   hero a quiet, breathing quality. Three silhouettes use different
+   durations and delays so the motion feels organic rather than synced. */
+@keyframes lj-silhouette-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-14px) rotate(-0.6deg);
+  }
+}
+
+.lj-silhouette-float {
+  animation: lj-silhouette-float 6s ease-in-out infinite;
+  will-change: transform;
+}
+
+.lj-silhouette-float-2 {
+  animation: lj-silhouette-float 7.5s ease-in-out infinite;
+  animation-delay: -2s;
+  will-change: transform;
+}
+
+.lj-silhouette-float-3 {
+  animation: lj-silhouette-float 8.5s ease-in-out infinite;
+  animation-delay: -4s;
+  will-change: transform;
 }
