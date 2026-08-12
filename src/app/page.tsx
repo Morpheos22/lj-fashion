@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { LjLogo } from '@/components/lj-logo';
 
 export default function Home() {
@@ -59,8 +60,8 @@ export default function Home() {
         </div>
         {/* Desktop nav */}
         <div className="hidden md:flex gap-9 text-xs tracking-[0.18em] uppercase">
-          <a href="#new" className="opacity-85 hover:opacity-100 transition-opacity">
-            New In
+          <a href="#bestsellers" className="opacity-85 hover:opacity-100 transition-opacity">
+            Bestsellers
           </a>
           <a href="#shop" className="opacity-85 hover:opacity-100 transition-opacity">
             Shop
@@ -98,7 +99,7 @@ export default function Home() {
           style={{ background: 'rgba(28,25,23,0.96)' }}
         >
           <div className="flex flex-col gap-5 text-sm tracking-[0.18em] uppercase">
-            <a href="#new" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">New In</a>
+            <a href="#bestsellers" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Bestsellers</a>
             <a href="#shop" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Shop</a>
             <a href="#story" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Our Story</a>
             <a href="#contact" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Contact</a>
@@ -215,43 +216,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* NEW ARRIVALS */}
+      {/* BESTSELLERS — editorial 2-image layout with real product photography.
+          Both images have been pre-treated with a warm cream edge blend so
+          their white studio backgrounds harmonize with the cream theme.
+          Layout: text left, 2-image grid right (stacked on mobile). */}
       <section
-        id="new"
-        className="lj-fade-up relative grid grid-cols-1 min-h-[78vh] md:grid-cols-[1.15fr_0.85fr]"
+        id="bestsellers"
+        className="lj-fade-up relative grid grid-cols-1 min-h-[78vh] md:grid-cols-[0.85fr_1.15fr]"
       >
-        <div className="min-h-[340px] sm:min-h-[420px] relative overflow-hidden">
-          <div
-            className="absolute inset-0"
-            style={{ background: 'linear-gradient(150deg,#EFE6D5,#D8C6A9 45%,#B49E7E 100%)' }}
-            role="img"
-            aria-label="New arrivals editorial image"
-          />
-        </div>
-        <div
-          className="flex flex-col justify-center gap-5 py-[48px] sm:py-[64px] px-[8%]"
-          style={{ background: 'var(--cream-deep)' }}
-        >
-          <span className="lj-eyebrow">New In</span>
-          <h2 className="lj-heading text-[clamp(28px,3.6vw,48px)]">New Arrivals</h2>
-          <p className="text-[14px] sm:text-[14.5px] leading-[1.8] max-w-[340px]" style={{ color: 'var(--ink-soft)' }}>
-            The latest pieces to enter the LJ wardrobe — fresh silhouettes, soft fabrics,
-            and refined details designed to feel as good as they look.
-          </p>
-          <a
-            href="#shop"
-            className="group mt-2.5 inline-flex items-center gap-3 text-[11px] tracking-[0.24em] uppercase border-b border-current pb-1.5 w-fit hover:tracking-[0.32em] hover:gap-4 hover:opacity-70 transition-all"
-          >
-            Shop New Arrivals
-            <span className="inline-block transition-transform group-hover:translate-x-1">
-              →
-            </span>
-          </a>
-        </div>
-      </section>
-
-      {/* BESTSELLERS */}
-      <section className="lj-fade-up relative grid grid-cols-1 min-h-[78vh] md:grid-cols-[0.85fr_1.15fr]">
         <div
           className="flex flex-col justify-center gap-5 py-[48px] sm:py-[64px] px-[8%] order-2 md:order-1"
           style={{ background: 'var(--cream-deep)' }}
@@ -272,13 +244,30 @@ export default function Home() {
             </span>
           </a>
         </div>
-        <div className="min-h-[340px] sm:min-h-[420px] relative overflow-hidden order-1 md:order-2">
-          <div
-            className="absolute inset-0"
-            style={{ background: 'linear-gradient(200deg,#E7DAC4,#C3AF8F 50%,#8E7A61 100%)' }}
-            role="img"
-            aria-label="Bestsellers editorial image"
-          />
+        {/* 2-image editorial grid */}
+        <div className="relative order-1 md:order-2 grid grid-cols-2 gap-2 sm:gap-3 p-4 sm:p-6 md:p-8" style={{ background: 'var(--cream)' }}>
+          {/* Image 1 — taller portrait, spans both rows on desktop */}
+          <div className="relative overflow-hidden col-span-1 row-span-2 min-h-[340px] sm:min-h-[480px] md:min-h-[560px]">
+            <Image
+              src="/bestseller-1.jpg"
+              alt="LJ bestseller — layered asymmetrical top with striped shirt"
+              fill
+              sizes="(max-width: 768px) 50vw, 35vw"
+              className="object-cover object-center"
+              priority={false}
+            />
+          </div>
+          {/* Image 2 — portrait, right column */}
+          <div className="relative overflow-hidden col-span-1 row-span-2 min-h-[340px] sm:min-h-[480px] md:min-h-[560px]">
+            <Image
+              src="/bestseller-2.jpg"
+              alt="LJ bestseller — long black button-up shirt dress with wide-leg trousers"
+              fill
+              sizes="(max-width: 768px) 50vw, 35vw"
+              className="object-cover object-center"
+              priority={false}
+            />
+          </div>
         </div>
       </section>
 
