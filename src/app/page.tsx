@@ -28,20 +28,24 @@ export default function Home() {
 
   const categories = [
     {
-      label: 'Women',
-      bg: 'radial-gradient(circle at 35% 30%,#EFE6D5,#CBB794 65%,#9A8567)',
-    },
-    {
       label: 'Dresses',
-      bg: 'radial-gradient(circle at 65% 30%,#E9DCC5,#B49C7A 65%,#77644E)',
+      img: '/cat-dresses.jpg',
+      alt: 'Pink maxi dresses and kaftans on hangers',
     },
     {
       label: 'Modest Wear',
-      bg: 'radial-gradient(circle at 40% 60%,#F1E7D6,#D3C1A4 65%,#A18C6C)',
+      img: '/cat-modest-wear.jpg',
+      alt: 'Model in powder blue kaftan with white wide-leg trousers',
     },
     {
-      label: 'Accessories',
-      bg: 'radial-gradient(circle at 55% 40%,#EBDFC9,#C6B08D 65%,#8B7659)',
+      label: 'Abayas',
+      img: '/cat-abayas.jpg',
+      alt: 'Model in floor-length black button-front abaya',
+    },
+    {
+      label: 'Bottoms',
+      img: '/cat-bottoms.jpg',
+      alt: 'Wide-leg trousers in burgundy, white, and patterned blue on hangers',
     },
   ];
 
@@ -328,17 +332,38 @@ export default function Home() {
         </p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 max-w-[920px] mx-auto">
           {categories.map((cat) => (
-            <a key={cat.label} href="#" className="flex flex-col items-center gap-5 group">
+            <a key={cat.label} href="#bestsellers" className="flex flex-col items-center gap-5 group">
+              {/* Circular image tile — real product photo with object-cover.
+                  Subtle inner ring + slow scale zoom on hover for editorial feel.
+                  A soft cream edge vignette is baked into the image so the
+                  photo blends into any background. */}
               <div
-                className="w-full aspect-square rounded-full relative overflow-hidden border transition-all duration-500 group-hover:scale-[1.04]"
-                style={{ background: cat.bg, borderColor: 'var(--line)' }}
-                onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--taupe)')}
-                onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--line)')}
-                role="img"
-                aria-label={`${cat.label} collection`}
-              />
+                className="w-full aspect-square rounded-full relative overflow-hidden border transition-all duration-500 group-hover:scale-[1.04] shadow-[0_2px_18px_rgba(28,25,23,0.06)]"
+                style={{ borderColor: 'var(--line)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--taupe)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--line)';
+                }}
+              >
+                <Image
+                  src={cat.img}
+                  alt={cat.alt}
+                  fill
+                  sizes="(max-width: 768px) 45vw, 22vw"
+                  className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.08]"
+                  priority={false}
+                />
+                {/* Inner cream ring — keeps the circular edge crisp against the photo */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-full"
+                  style={{ boxShadow: 'inset 0 0 0 1px rgba(248,243,234,0.4)' }}
+                  aria-hidden="true"
+                />
+              </div>
               <span
-                className="text-[11px] sm:text-xs tracking-[0.2em] sm:tracking-[0.22em] uppercase"
+                className="text-[11px] sm:text-xs tracking-[0.2em] sm:tracking-[0.22em] uppercase transition-colors duration-300 group-hover:text-[var(--ink)]"
                 style={{ color: 'var(--ink-soft)' }}
               >
                 {cat.label}
