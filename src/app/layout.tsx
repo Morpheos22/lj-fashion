@@ -83,6 +83,85 @@ export default function RootLayout({
         {/* Preload the main hero silhouette for fast LCP — this is the
             tallest, most visible image in the above-the-fold hero area. */}
         <link rel="preload" as="image" href="/silhouette-1.png" fetchPriority="high" />
+
+        {/* Link to llms.txt — helps AI crawlers discover the AI-friendly
+            context file at /llms.txt */}
+        <link rel="llms-txt" href="/llms.txt" type="text/plain" />
+
+        {/* JSON-LD structured data — helps Google and other search engines
+            understand the organization, its products, and contact points */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: "LJ Fashion",
+              alternateName: "LJ Fashion — Designed Beyond the Trend",
+              url: "https://ljfashion.cv",
+              description:
+                "A women's wear fashion brand founded by Linda Joweigha, specializing in timeless, versatile, and effortlessly elegant pieces.",
+              founder: {
+                "@type": "Person",
+                name: "Linda Joweigha",
+                jobTitle: "Founder & Creative Director",
+              },
+              foundingLocation: {
+                "@type": "Place",
+                name: "Lagos, Nigeria",
+              },
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Lagos",
+                addressCountry: "NG",
+              },
+              sameAs: [
+                "https://www.instagram.com/lindajoweigha",
+                "https://www.tiktok.com/@lindajoweigha",
+              ],
+              contactPoint: [
+                {
+                  "@type": "ContactPoint",
+                  contactType: "sales",
+                  telephone: "+2348131148006",
+                  availableLanguage: ["English"],
+                },
+              ],
+              makesOffer: [
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "The Layered Asymmetrical Top",
+                    category: "Women's Clothing",
+                  },
+                  price: "42000",
+                  priceCurrency: "NGN",
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "The Black Shirt Dress",
+                    category: "Women's Clothing",
+                  },
+                  price: "38500",
+                  priceCurrency: "NGN",
+                },
+                {
+                  "@type": "Offer",
+                  itemOffered: {
+                    "@type": "Product",
+                    name: "The Pink Striped Kaftan",
+                    category: "Women's Clothing",
+                  },
+                  price: "36000",
+                  priceCurrency: "NGN",
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body
         className={`${cormorant.variable} ${jost.variable} ${alexBrush.variable} antialiased`}
