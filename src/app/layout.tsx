@@ -79,6 +79,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preload the main hero silhouette for fast LCP — this is the
+            tallest, most visible image in the above-the-fold hero area. */}
+        <link rel="preload" as="image" href="/silhouette-1.png" fetchPriority="high" />
+      </head>
       <body
         className={`${cormorant.variable} ${jost.variable} ${alexBrush.variable} antialiased`}
       >

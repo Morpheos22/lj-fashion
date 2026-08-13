@@ -1,0 +1,72 @@
+# LJ Fashion
+
+> Designed Beyond the Trend
+
+A women's wear fashion brand founded by Linda Joweigha, specializing in timeless, versatile, and effortlessly elegant pieces designed for the modern woman's everyday life.
+
+Core Identity
+
+- Full Name: LJ Fashion
+- Location: Lagos, Nigeria
+- Mission: To end the daily compromise between comfort and style by creating versatile, high-quality wardrobe pieces designed beyond fleeting trends.
+- Brand Aesthetic: Cream, ink, and taupe palette with editorial typography (Cormorant Garamond + Jost + Alex Brush).
+- Founder: Linda Joweigha, Creative Director.
+
+Primary Collections & Categories
+
+- Dresses: Maxi dresses, kaftans, and flowing silhouettes for everyday elegance.
+- Modest Wear: Powder blue kaftans, abayas, and coordinated sets offering full coverage without sacrificing contemporary taste.
+- Occasion Wear: Dressy pieces including eyelet lace dresses with rhinestone detailing for special occasions.
+- Bottoms: Wide-leg trousers and palazzo pants in solid burgundy, white, and patterned designs.
+
+Bestseller Products
+
+- The Layered Asymmetrical Top (NGN 42,000): A sleeveless structured black top with an angular extended hemline layered over a blue-and-white striped shirt with built-in pleated shorts.
+- The Black Shirt Dress (NGN 38,500): A flowing button-up shirt dress paired with matching wide-leg trousers in a monochromatic ensemble.
+- The Pink Striped Kaftan (NGN 36,000): A flowing kaftan-style maxi dress in soft pink-coral with a vertical multi-colour stripe panel and side slits.
+
+Brand Philosophy
+
+- Design Ethos: "Where soft meets statement" — clothing that complements who you are, not overwhelms it.
+- Quality Pillars: Quality, Comfort, Timeless Design.
+- Production: Each piece is made to order in the Lagos atelier with a focus on clean seaming and fabric integrity.
+- Lead Time: 7–10 business days for production and shipping within Nigeria.
+
+Digital Presence & Contact
+
+- Website: https://ljfashion.cv
+- Instagram: https://www.instagram.com/lindajoweigha
+- TikTok: https://www.tiktok.com/@lindajoweigha
+- WhatsApp: +234 813 114 8006 (https://wa.me/2348131148006)
+- Email: hello@ljfashion.com
+
+Target Audience
+
+- Modern women seeking versatile, timeless wardrobes
+- Professionals balancing work and family life
+- Women who value modest aesthetics with contemporary design
+- Customers in Nigeria and the African diaspora
+
+Key Pages
+
+- Homepage: https://ljfashion.cv/
+- Bestsellers: https://ljfashion.cv/#bestsellers
+- Find Your Signature (Shop Categories): https://ljfashion.cv/#shop
+- Our Story: https://ljfashion.cv/our-story
+- Gallery: https://ljfashion.cv/#gallery
+- Contact: https://ljfashion.cv/#contact
+- Product Pages:
+  - https://ljfashion.cv/products/layered-asymmetrical-top
+  - https://ljfashion.cv/products/black-shirt-dress
+  - https://ljfashion.cv/products/pink-striped-kaftan
+
+Technical Notes
+
+- Built with Next.js 16, TypeScript, and Tailwind CSS 4
+- All fonts self-hosted (no third-party CDN dependencies)
+- Images served in AVIF/WebP format with lazy loading
+- Content-Security-Policy: strict, same-origin only (no external assets loaded client-side)
+- Image download protection enabled (right-click and drag disabled on images)
+- All product images watermarked with the LJ logo
+
+This file enables AI applications and agents to easily access and understand the LJ Fashion website context.

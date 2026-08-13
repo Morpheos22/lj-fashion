@@ -186,9 +186,11 @@
   }
 }
 
-/* Hero silhouette float — a slow, subtle vertical drift that gives the
-   hero a quiet, breathing quality. Three silhouettes use different
-   durations and delays so the motion feels organic rather than synced. */
+/* Hero silhouette float + enter animations.
+   Two separate animations on separate elements:
+   - Outer wrapper (.lj-silhouette-enter): fade + lift in on load (once)
+   - Inner element (.lj-silhouette-float): subtle vertical drift (infinite)
+   This avoids CSS animation property conflicts. */
 @keyframes lj-silhouette-float {
   0%, 100% {
     transform: translateY(0) rotate(0deg);
@@ -196,6 +198,21 @@
   50% {
     transform: translateY(-14px) rotate(-0.6deg);
   }
+}
+
+@keyframes lj-silhouette-enter {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.lj-silhouette-enter {
+  animation: lj-silhouette-enter 1s ease-out forwards;
 }
 
 .lj-silhouette-float {
@@ -213,6 +230,17 @@
   animation: lj-silhouette-float 8.5s ease-in-out infinite;
   animation-delay: -4s;
   will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lj-silhouette-float,
+  .lj-silhouette-float-2,
+  .lj-silhouette-float-3,
+  .lj-silhouette-enter {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 
 /* Gallery modal — full-screen lightbox with a smooth fade + scale-in.

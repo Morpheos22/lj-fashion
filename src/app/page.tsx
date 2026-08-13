@@ -384,142 +384,192 @@ export default function Home() {
 
           {/* Gallery-4 — far left, shortest, most subtle */}
           <div
-            className="lj-silhouette-float-3 absolute"
+            className="absolute lj-silhouette-enter"
             style={{
               left: '4%',
               bottom: '0%',
-              opacity: 0.15,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.2))',
+              animationDelay: '0.6s',
             }}
           >
-            <Image
-              src="/silhouette-7.png"
-              alt=""
-              width={200}
-              height={357}
-              className="h-[30vh] w-auto"
-            />
+            <div
+              className="lj-silhouette-float-3"
+              style={{
+                opacity: 0.15,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.2))',
+              }}
+            >
+              <Image
+                src="/silhouette-7.png"
+                alt=""
+                width={200}
+                height={357}
+                className="h-[30vh] w-auto"
+              />
+            </div>
           </div>
           {/* Gallery-5 — left, medium */}
           <div
-            className="lj-silhouette-float absolute"
+            className="absolute lj-silhouette-enter"
             style={{
               left: '15%',
               bottom: '0%',
-              opacity: 0.20,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 5px 16px rgba(20,16,12,0.25))',
+              animationDelay: '0.4s',
             }}
           >
-            <Image
-              src="/silhouette-5.png"
-              alt=""
-              width={220}
-              height={393}
-              className="h-[34vh] w-auto"
-            />
+            <div
+              className="lj-silhouette-float"
+              style={{
+                opacity: 0.20,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 5px 16px rgba(20,16,12,0.25))',
+              }}
+            >
+              <Image
+                src="/silhouette-5.png"
+                alt=""
+                width={220}
+                height={393}
+                className="h-[34vh] w-auto"
+              />
+            </div>
           </div>
 
           {/* ════════ CENTER — 3 bestseller silhouettes (the focus) ════════ */}
 
           {/* Bestseller-2 — left anchor of center group */}
           <div
-            className="lj-silhouette-float-2 absolute"
+            className="absolute lj-silhouette-enter"
             style={{
               left: '36%',
               bottom: '0%',
-              opacity: 0.35,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 6px 20px rgba(20,16,12,0.3))',
+              animationDelay: '0.2s',
             }}
           >
-            <Image
-              src="/silhouette-2.png"
-              alt=""
-              width={260}
-              height={465}
-              className="h-[42vh] w-auto"
-            />
+            <div
+              className="lj-silhouette-float-2"
+              style={{
+                opacity: 0.35,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 6px 20px rgba(20,16,12,0.3))',
+              }}
+            >
+              <Image
+                src="/silhouette-2.png"
+                alt=""
+                width={260}
+                height={465}
+                className="h-[42vh] w-auto"
+              />
+            </div>
           </div>
           {/* Bestseller-1 — center, tallest, highest opacity (the hero figure) */}
           <div
-            className="lj-silhouette-float absolute"
+            className="absolute lj-silhouette-enter"
             style={{
               left: '47%',
               bottom: '0%',
-              opacity: 0.45,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
+              animationDelay: '0s',
             }}
           >
-            <Image
-              src="/silhouette-1.png"
-              alt=""
-              width={300}
-              height={536}
-              className="h-[48vh] w-auto"
-            />
+            <div
+              className="lj-silhouette-float"
+              style={{
+                opacity: 0.45,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
+              }}
+            >
+              <Image
+                src="/silhouette-1.png"
+                alt=""
+                width={300}
+                height={536}
+                className="h-[48vh] w-auto"
+                fetchPriority="high"
+              />
+            </div>
           </div>
           {/* Bestseller-3 — right anchor of center group */}
           <div
-            className="lj-silhouette-float-3 absolute"
+            className="absolute lj-silhouette-enter"
             style={{
               left: '58%',
               bottom: '0%',
-              opacity: 0.38,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 7px 22px rgba(20,16,12,0.32))',
+              animationDelay: '0.2s',
             }}
           >
-            <Image
-              src="/silhouette-3.png"
-              alt=""
-              width={280}
-              height={500}
-              className="h-[44vh] w-auto"
-            />
+            <div
+              className="lj-silhouette-float-3"
+              style={{
+                opacity: 0.38,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 7px 22px rgba(20,16,12,0.32))',
+              }}
+            >
+              <Image
+                src="/silhouette-3.png"
+                alt=""
+                width={280}
+                height={500}
+                className="h-[44vh] w-auto"
+              />
+            </div>
           </div>
 
           {/* ════════ RIGHT SIDE — gallery silhouettes spreading to edge ════════ */}
 
           {/* Gallery-6 — right, medium */}
           <div
-            className="lj-silhouette-float-2 absolute"
+            className="absolute lj-silhouette-enter"
             style={{
               left: '74%',
               bottom: '0%',
-              opacity: 0.25,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 5px 18px rgba(20,16,12,0.28))',
+              animationDelay: '0.4s',
             }}
           >
-            <Image
-              src="/silhouette-6.png"
-              alt=""
-              width={240}
-              height={429}
-              className="h-[36vh] w-auto"
-            />
+            <div
+              className="lj-silhouette-float-2"
+              style={{
+                opacity: 0.25,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 5px 18px rgba(20,16,12,0.28))',
+              }}
+            >
+              <Image
+                src="/silhouette-6.png"
+                alt=""
+                width={240}
+                height={429}
+                className="h-[36vh] w-auto"
+              />
+            </div>
           </div>
           {/* Gallery-7 — far right, shortest, most subtle */}
           <div
-            className="lj-silhouette-float absolute"
+            className="absolute lj-silhouette-enter"
             style={{
               left: '85%',
               bottom: '0%',
-              opacity: 0.18,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.22))',
+              animationDelay: '0.6s',
             }}
           >
-            <Image
-              src="/silhouette-7.png"
-              alt=""
-              width={210}
-              height={375}
-              className="h-[32vh] w-auto"
-            />
+            <div
+              className="lj-silhouette-float"
+              style={{
+                opacity: 0.18,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.22))',
+              }}
+            >
+              <Image
+                src="/silhouette-7.png"
+                alt=""
+                width={210}
+                height={375}
+                className="h-[32vh] w-auto"
+              />
+            </div>
           </div>
         </div>
 
