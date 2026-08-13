@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
+import type { Metadata } from 'next';
 import { getProductBySlug, getAllProductSlugs, products } from '@/lib/products';
 import { LjLogo } from '@/components/lj-logo';
-import type { Metadata } from 'next';
+import { ProductImageZoom } from '@/components/product-image-zoom';
 
 export async function generateStaticParams() {
   return getAllProductSlugs().map((slug) => ({ slug }));
@@ -65,30 +65,12 @@ export default async function ProductPage({
 
       {/* Product detail */}
       <section className="grid grid-cols-1 md:grid-cols-2 min-h-[80vh]">
-        {/* Image — left on desktop, top on mobile. Uses high quality (100)
-            and object-contain so the ENTIRE garment is visible (no cropping).
-            The image sits on a cream-deep panel that frames it editorially. */}
+        {/* Image — left on desktop, top on mobile. Uses the ProductImageZoom
+            client component which opens a full-screen zoom modal on click.
+            Inside the modal: click toggles fit/100% zoom, drag to pan when
+            zoomed, mouse wheel adjusts zoom, Escape closes. */}
         <div className="relative min-h-[60vh] md:min-h-[80vh] overflow-hidden order-1 flex items-center justify-center p-6 sm:p-10 md:p-14" style={{ background: 'var(--cream-deep)' }}>
-          <div className="relative w-full h-full min-h-[50vh] md:min-h-[70vh]">
-            <Image
-              src={product.image}
-              alt={product.imageAlt}
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              quality={100}
-              className="object-contain object-center pointer-events-none select-none"
-              draggable={false}
-              priority
-            />
-            {/* Transparent overlay — intercepts all clicks/drags on the
-                image area, preventing any direct interaction with the
-                underlying <img> element. */}
-            <div
-              className="absolute inset-0 z-[1]"
-              aria-hidden="true"
-              style={{ background: 'transparent' }}
-            />
-          </div>
+          <ProductImageZoom src={product.image} alt={product.imageAlt} />
         </div>
 
         {/* Details — right on desktop, below image on mobile */}

@@ -1,15 +1,39 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { LjLogo } from '@/components/lj-logo';
+import { PageTearTransition } from '@/components/page-tear-transition';
 
 export default function Home() {
+  const router = useRouter();
+
   // Mobile nav toggle
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Gallery modal — index of the currently open image, or null if closed
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+
+  // Page-tear transition — when active, plays the tear animation, then
+  // navigates to the pending href. `pendingHref` is the destination.
+  const [tearActive, setTearActive] = useState(false);
+  const pendingHrefRef = useRef<string | null>(null);
+
+  // Trigger the tear transition, then navigate on completion
+  const navigateWithTear = useCallback((href: string) => {
+    pendingHrefRef.current = href;
+    setTearActive(true);
+  }, []);
+
+  const handleTearComplete = useCallback(() => {
+    setTearActive(false);
+    const href = pendingHrefRef.current;
+    if (href) {
+      pendingHrefRef.current = null;
+      router.push(href);
+    }
+  }, [router]);
 
   // Swipe/drag gesture state for the gallery modal
   // - touchStartRef: where the touch/press began (clientX)
@@ -452,10 +476,12 @@ export default function Home() {
             Mobile: 2 columns with the 3rd image spanning full width
             below for an editorial asymmetric feel. */}
         <div className="relative order-1 md:order-2 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 p-4 sm:p-6 md:p-8" style={{ background: 'var(--cream)' }}>
-          {/* Image 1 */}
-          <a
-            href="/products/layered-asymmetrical-top"
-            className="group relative overflow-hidden col-span-1 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block"
+          {/* Image 1 — clicking triggers the page-tear transition, then
+              navigates to the product page */}
+          <button
+            type="button"
+            onClick={() => navigateWithTear('/products/layered-asymmetrical-top')}
+            className="group relative overflow-hidden col-span-1 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block cursor-pointer w-full text-left"
             aria-label="View bestseller — layered asymmetrical top with striped shirt"
           >
             <Image
@@ -484,10 +510,11 @@ export default function Home() {
                 View Piece
               </span>
             </div>
-          </a>
+          </button>
           {/* Image 2 */}
-          <a
-            href="/products/black-shirt-dress"
+          <button
+            type="button"
+            onClick={() => navigateWithTear('/products/black-shirt-dress')}
             className="group relative overflow-hidden col-span-1 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block"
             aria-label="View bestseller — long black button-up shirt dress with wide-leg trousers"
           >
@@ -514,12 +541,13 @@ export default function Home() {
                 View Piece
               </span>
             </div>
-          </a>
+          </button>
           {/* Image 3 — spans full width on mobile (col-span-2) for editorial
               asymmetry; single column on desktop like the others */}
-          <a
-            href="/products/pink-striped-kaftan"
-            className="group relative overflow-hidden col-span-2 md:col-span-1 min-h-[340px] sm:min-h-[400px] md:min-h-[560px] block"
+          <button
+            type="button"
+            onClick={() => navigateWithTear('/products/pink-striped-kaftan')}
+            className="group relative overflow-hidden col-span-2 md:col-span-1 min-h-[340px] sm:min-h-[400px] md:min-h-[560px] block cursor-pointer w-full text-left"
             aria-label="View bestseller — pink striped kaftan maxi dress"
           >
             <Image
@@ -545,7 +573,7 @@ export default function Home() {
                 View Piece
               </span>
             </div>
-          </a>
+          </button>
         </div>
       </section>
 
@@ -1049,6 +1077,11 @@ export default function Home() {
           © 2026 LJ Fashion. Designed beyond the trend.
         </div>
       </footer>
+
+      {/* Page-tear transition overlay — renders on top of everything when
+          a bestseller "View Piece" is clicked, plays the tear animation,
+          then navigates to the product page. */}
+      <PageTearTransition active={tearActive} onComplete={handleTearComplete} />
     </main>
   );
 }
