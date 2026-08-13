@@ -1,25 +1,37 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Jost, Alex_Brush } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
-const cormorant = Cormorant_Garamond({
+// Self-hosted fonts — loaded from /public/fonts/ so the browser never
+// contacts Google Fonts (or any other CDN) at runtime. This is both a
+// performance win (no third-party connection) and a security win (no
+// external asset dependency).
+const cormorant = localFont({
+  src: [
+    { path: "../../public/fonts/cormorant-garamond-300.woff2", weight: "300", style: "normal" },
+    { path: "../../public/fonts/cormorant-garamond-400.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/cormorant-garamond-500.woff2", weight: "500", style: "normal" },
+    { path: "../../public/fonts/cormorant-garamond-400-italic.woff2", weight: "400", style: "italic" },
+  ],
   variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  style: ["normal", "italic"],
+  display: "swap",
 });
 
-const jost = Jost({
+const jost = localFont({
+  src: [
+    { path: "../../public/fonts/jost-300.woff2", weight: "300", style: "normal" },
+    { path: "../../public/fonts/jost-400.woff2", weight: "400", style: "normal" },
+    { path: "../../public/fonts/jost-500.woff2", weight: "500", style: "normal" },
+  ],
   variable: "--font-jost",
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  display: "swap",
 });
 
-const alexBrush = Alex_Brush({
+const alexBrush = localFont({
+  src: [{ path: "../../public/fonts/alex-brush-400.woff2", weight: "400", style: "normal" }],
   variable: "--font-alex-brush",
-  subsets: ["latin"],
-  weight: ["400"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

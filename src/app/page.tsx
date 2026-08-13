@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { LjLogo } from '@/components/lj-logo';
 
@@ -10,6 +10,15 @@ export default function Home() {
 
   // Gallery modal — index of the currently open image, or null if closed
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+
+  // Swipe/drag gesture state for the gallery modal
+  // - touchStartRef: where the touch/press began (clientX)
+  // - touchDeltaRef: live offset during the drag (ref for synchronous reads
+  //   in handleDragEnd; state is async and would read stale values)
+  // - touchDelta (state): drives the visual transform on the image
+  const touchStartRef = useRef<number | null>(null);
+  const touchDeltaRef = useRef(0);
+  const [touchDelta, setTouchDelta] = useState(0);
 
   // IntersectionObserver for fade-up scroll animations (matches original design behaviour)
   useEffect(() => {
@@ -116,6 +125,74 @@ export default function Home() {
       };
     }
   }, [galleryIndex, closeGallery, nextImage, prevImage]);
+
+  // Swipe/drag gesture handlers — used by both touch (mobile) and mouse
+  // (desktop) drag on the modal image area. Threshold of 50px determines
+  // a "swipe" vs a tap/click. The live touchDelta gives visual feedback
+  // by offsetting the image during the drag.
+  const SWIPE_THRESHOLD = 50;
+
+  const handleDragStart = useCallback((clientX: number) => {
+    touchStartRef.current = clientX;
+    touchDeltaRef.current = 0;
+    setTouchDelta(0);
+  }, []);
+
+  const handleDragMove = useCallback((clientX: number) => {
+    if (touchStartRef.current === null) return;
+    const delta = clientX - touchStartRef.current;
+    touchDeltaRef.current = delta;
+    setTouchDelta(delta);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    if (touchStartRef.current === null) return;
+    const delta = touchDeltaRef.current;
+    touchStartRef.current = null;
+    touchDeltaRef.current = 0;
+    setTouchDelta(0);
+    if (Math.abs(delta) >= SWIPE_THRESHOLD) {
+      if (delta > 0) {
+        // Swiped right → previous image
+        prevImage();
+      } else {
+        // Swiped left → next image
+        nextImage();
+      }
+    }
+  }, [prevImage, nextImage]);
+
+  // Touch handlers (mobile)
+  const onTouchStart = useCallback(
+    (e: React.TouchEvent) => handleDragStart(e.touches[0].clientX),
+    [handleDragStart]
+  );
+  const onTouchMove = useCallback(
+    (e: React.TouchEvent) => handleDragMove(e.touches[0].clientX),
+    [handleDragMove]
+  );
+  const onTouchEnd = useCallback(() => handleDragEnd(), [handleDragEnd]);
+
+  // Mouse handlers (desktop drag) — mousedown on image, track mousemove,
+  // end on mouseup. We attach move/up listeners to window so the drag
+  // continues even if the cursor leaves the image bounds.
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      // Only respond to left click
+      if (e.button !== 0) return;
+      e.preventDefault();
+      handleDragStart(e.clientX);
+      const onMove = (ev: MouseEvent) => handleDragMove(ev.clientX);
+      const onUp = () => {
+        handleDragEnd();
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    },
+    [handleDragStart, handleDragMove, handleDragEnd]
+  );
 
   return (
     <main className="bg-background text-foreground min-h-screen">
@@ -733,17 +810,31 @@ export default function Home() {
             </svg>
           </button>
 
-          {/* Image + caption container — stopPropagation so clicks here don't close */}
+          {/* Image + caption container — stopPropagation so clicks here don't close.
+              Touch + mouse swipe/drag handlers on this container drive gallery
+              navigation on both mobile (touch) and desktop (mouse drag). */}
           <div
-            className="relative z-[101] max-w-[90vw] max-h-[90vh] flex flex-col items-center gap-4"
+            className="relative z-[101] max-w-[90vw] max-h-[90vh] flex flex-col items-center gap-4 select-none"
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onMouseDown={onMouseDown}
+            style={{ cursor: 'grab' }}
           >
             {/* The image — large, dynamic, with scale-in animation.
-                Key forces re-mount on navigation so the animation replays. */}
+                Key forces re-mount on navigation so the animation replays.
+                During a drag, the image is offset by touchDelta (px) for
+                live visual feedback, with a subtle opacity fade. */}
             <div
               key={galleryIndex}
               className="lj-modal-image relative w-full flex items-center justify-center"
-              style={{ maxHeight: '78vh' }}
+              style={{
+                maxHeight: '78vh',
+                transform: touchDelta !== 0 ? `translateX(${touchDelta}px)` : undefined,
+                opacity: touchDelta !== 0 ? Math.max(0.5, 1 - Math.abs(touchDelta) / 300) : undefined,
+                transition: touchDelta === 0 ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
+              }}
             >
               <Image
                 src={galleryImages[galleryIndex].src}
@@ -751,8 +842,9 @@ export default function Home() {
                 width={800}
                 height={1200}
                 quality={100}
-                className="w-auto h-auto max-w-full max-h-[78vh] object-contain"
+                className="w-auto h-auto max-w-full max-h-[78vh] object-contain pointer-events-none"
                 style={{ filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.5))' }}
+                draggable={false}
                 priority
               />
             </div>
