@@ -254,3 +254,32 @@
     transform: none !important;
   }
 }
+
+/* ============================================================
+   IMAGE DOWNLOAD PROTECTION
+   Disable native image drag, selection, and save behaviors.
+   Combined with the JS contextmenu handler in
+   ImageProtection.tsx, this prevents the common casual-user
+   download paths (right-click → Save Image As, drag to desktop,
+   long-press → save on mobile).
+   ============================================================ */
+img {
+  /* Disable native drag-to-desktop behavior (Chrome/Safari/Edge) */
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+  /* Prevent text-selection-style highlighting of images */
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  user-select: none !important;
+  /* Force pointer events through to any overlay protection div */
+  pointer-events: none !important;
+}
+
+/* Re-enable pointer events for images that are inside interactive
+   contexts (links, buttons) where clicks must work. The parent <a>
+   or <button> handles the click, so the img itself still can't be
+   dragged or right-clicked. */
+a img,
+button img {
+  pointer-events: auto !important;
+}

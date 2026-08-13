@@ -76,8 +76,17 @@ export default async function ProductPage({
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               quality={100}
-              className="object-contain object-center"
+              className="object-contain object-center pointer-events-none select-none"
+              draggable={false}
               priority
+            />
+            {/* Transparent overlay — intercepts all clicks/drags on the
+                image area, preventing any direct interaction with the
+                underlying <img> element. */}
+            <div
+              className="absolute inset-0 z-[1]"
+              aria-hidden="true"
+              style={{ background: 'transparent' }}
             />
           </div>
         </div>

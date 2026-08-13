@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { ImageProtection } from "@/components/image-protection";
 
 // Self-hosted fonts — loaded from /public/fonts/ so the browser never
 // contacts Google Fonts (or any other CDN) at runtime. This is both a
@@ -81,6 +82,9 @@ export default function RootLayout({
       <body
         className={`${cormorant.variable} ${jost.variable} ${alexBrush.variable} antialiased`}
       >
+        {/* Image download protection — blocks right-click on images, drag-to-
+            desktop, and common save/devtools shortcuts site-wide. */}
+        <ImageProtection />
         {children}
         <Toaster />
       </body>
