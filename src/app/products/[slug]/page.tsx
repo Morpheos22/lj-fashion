@@ -18,11 +18,11 @@ export async function generateMetadata({
   const product = getProductBySlug(slug);
   if (!product) return { title: 'Product not found — LJ Fashion' };
   return {
-    title: `${product.name} — LJ Fashion`,
-    description: product.tagline,
+    title: `${product.name} — LJ Fashion | Bespoke Women's Fashion Abuja`,
+    description: `${product.tagline} Bespoke, made to order in Abuja, Nigeria.`,
     openGraph: {
-      title: `${product.name} — LJ Fashion`,
-      description: product.tagline,
+      title: `${product.name} — LJ Fashion | Bespoke Women's Fashion Abuja`,
+      description: `${product.tagline} Bespoke, made to order in Abuja, Nigeria.`,
       type: 'website',
     },
   };
@@ -170,7 +170,7 @@ export default async function ProductPage({
               <span>→</span>
             </a>
             <p className="mt-4 text-[12px] leading-[1.7]" style={{ color: 'var(--taupe)' }}>
-              Each LJ piece is made to order in our Lagos atelier. Tap to chat with us on WhatsApp — please allow 7–10 business days for production and shipping within Nigeria.
+              Each LJ piece is bespoke, made to order in our Abuja atelier. Tap to chat with us on WhatsApp — please allow 7–10 business days for production and shipping within Nigeria (Abuja, FCT, and nationwide).
             </p>
           </div>
         </div>

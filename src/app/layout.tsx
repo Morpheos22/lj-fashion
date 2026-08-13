@@ -36,16 +36,22 @@ const alexBrush = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "LJ Fashion — Designed Beyond the Trend",
+  title: "LJ Fashion — Bespoke Women's Fashion in Abuja | Designed Beyond the Trend",
   description:
-    "LJ Fashion is a women's wear brand founded by Linda Joweigha. Versatile, comfortable, timeless pieces designed beyond the trend.",
+    "LJ Fashion is a bespoke women's wear brand in Abuja, Nigeria, founded by Linda Joweigha. Bespoke dresses, modest wear, occasion wear, and more — designed beyond the trend.",
   keywords: [
     "LJ Fashion",
-    "women's wear",
-    "modest wear",
-    "dresses",
-    "accessories",
-    "timeless fashion",
+    "bespoke fashion Abuja",
+    "women's fashion Abuja",
+    "modest wear Abuja",
+    "dresses Abuja",
+    "kaftan Abuja",
+    "abaya Abuja",
+    "occasion wear Abuja",
+    "ladies fashion Abuja",
+    "Nigerian fashion brand",
+    "bespoke clothing Abuja",
+    "Federal Capital Territory fashion",
     "Linda Joweigha",
   ],
   authors: [{ name: "LJ Fashion" }],
@@ -58,17 +64,17 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "LJ Fashion — Designed Beyond the Trend",
+    title: "LJ Fashion — Bespoke Women's Fashion in Abuja",
     description:
-      "Versatile, comfortable, timeless — pieces you'll return to season after season.",
+      "Bespoke women's wear brand in Abuja, Nigeria. Versatile, comfortable, timeless pieces by Linda Joweigha — designed beyond the trend.",
     siteName: "LJ Fashion",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "LJ Fashion — Designed Beyond the Trend",
+    title: "LJ Fashion — Bespoke Women's Fashion in Abuja",
     description:
-      "Versatile, comfortable, timeless — pieces you'll return to season after season.",
+      "Bespoke women's wear brand in Abuja, Nigeria. Versatile, comfortable, timeless pieces by Linda Joweigha — designed beyond the trend.",
   },
 };
 
@@ -97,10 +103,10 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "Organization",
               name: "LJ Fashion",
-              alternateName: "LJ Fashion — Designed Beyond the Trend",
+              alternateName: "LJ Fashion — Bespoke Women's Fashion in Abuja",
               url: "https://ljfashion.cv",
               description:
-                "A women's wear fashion brand founded by Linda Joweigha, specializing in timeless, versatile, and effortlessly elegant pieces.",
+                "A bespoke women's wear fashion brand founded by Linda Joweigha in Abuja, Nigeria, specializing in timeless, versatile, and effortlessly elegant pieces designed for the modern woman.",
               founder: {
                 "@type": "Person",
                 name: "Linda Joweigha",
@@ -108,13 +114,20 @@ export default function RootLayout({
               },
               foundingLocation: {
                 "@type": "Place",
-                name: "Lagos, Nigeria",
+                name: "Abuja, Federal Capital Territory, Nigeria",
               },
               address: {
                 "@type": "PostalAddress",
-                addressLocality: "Lagos",
+                addressLocality: "Abuja",
+                addressRegion: "Federal Capital Territory",
                 addressCountry: "NG",
               },
+              areaServed: [
+                { "@type": "City", name: "Abuja" },
+                { "@type": "State", name: "Federal Capital Territory" },
+                { "@type": "Country", name: "Nigeria" },
+              ],
+              keywords: "bespoke fashion Abuja, women's fashion Abuja, modest wear Abuja, kaftan Abuja, abaya Abuja, occasion wear Abuja, ladies fashion Abuja, Nigerian fashion brand",
               sameAs: [
                 "https://www.instagram.com/lindajoweigha",
                 "https://www.tiktok.com/@lindajoweigha",

@@ -4,13 +4,13 @@ import type { Metadata } from 'next';
 import { LjLogo } from '@/components/lj-logo';
 
 export const metadata: Metadata = {
-  title: 'Our Story — LJ Fashion',
+  title: "Our Story — LJ Fashion | Bespoke Women's Fashion in Abuja",
   description:
-    'Where soft meets statement. LJ Fashion was founded by Linda Joweigha as an antidote to the noise — a sanctuary for modern elegance, designed beyond the trend.',
+    "Where soft meets statement. LJ Fashion is a bespoke women's wear brand based in Abuja, Nigeria, founded by Linda Joweigha as an antidote to the noise — a sanctuary for modern elegance, designed beyond the trend.",
   openGraph: {
-    title: 'Our Story — LJ Fashion',
+    title: "Our Story — LJ Fashion | Bespoke Women's Fashion in Abuja",
     description:
-      'Where soft meets statement. Founded by Linda Joweigha as an antidote to the noise.',
+      "Where soft meets statement. A bespoke women's wear brand based in Abuja, founded by Linda Joweigha.",
     type: 'website',
   },
 };
@@ -237,9 +237,9 @@ export default function OurStoryPage() {
             </p>
             <p className="text-[15px] sm:text-[16px] leading-[1.9]" style={{ color: 'var(--ink-soft)' }}>
               Driven by a passion to simplify elegance, Linda built LJ Fashion from the
-              ground up. As Creative Director, she oversees every design decision with a
-              clear mandate: prioritize how it feels, respect how it wears, and ensure it
-              lasts.
+              ground up in Abuja, Nigeria. As Creative Director, she oversees every design
+              decision with a clear mandate: prioritize how it feels, respect how it wears,
+              and ensure it lasts.
             </p>
             <p className="text-[15px] sm:text-[16px] leading-[1.9]" style={{ color: 'var(--ink-soft)' }}>
               For Linda, LJ isn&apos;t just a label — it is an invitation to slow down,

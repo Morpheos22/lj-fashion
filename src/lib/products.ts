@@ -36,7 +36,7 @@ export const products: ProductDetail[] = [
     description: [
       'A study in architectural layering, this sleeveless top is cut from a structured black fabric with an angular, extended hemline that creates a geometric overlay effect. Beneath it, a blue-and-white vertically striped shirt peeks through at the collar and cascades into an asymmetrical skirt panel — a single piece that reads as a complete, considered outfit.',
       'Designed for the woman who dresses with intention, the layered silhouette moves between boardroom and gallery opening with quiet confidence. The pleated shorts underneath provide coverage without bulk, while the extended hemline creates a dramatic line that elongates the frame.',
-      'Each piece is finished by hand in our Lagos atelier, with a focus on clean seaming and fabric integrity that ensures the garment holds its shape through countless wears.',
+      'Each piece is finished by hand in our Abuja atelier, with a focus on clean seaming and fabric integrity that ensures the garment holds its shape through countless wears.',
     ],
     details: [
       'Sleeveless structured top with angular extended hemline',
@@ -44,7 +44,7 @@ export const products: ProductDetail[] = [
       'Built-in pleated shorts for coverage',
       'Concealed side zip closure',
       'Fully finished seams throughout',
-      'Designed and made in Lagos, Nigeria',
+      'Designed and bespoke, made in Abuja, Nigeria',
     ],
     fabric:
       'Top: 100% mid-weight cotton twill. Overlay: striped cotton shirting. Shorts: pleated crepe.',
@@ -82,7 +82,7 @@ export const products: ProductDetail[] = [
       'Full-length centre-front button placket',
       'Mandarin collar with clean finish',
       'Side pockets on trousers',
-      'Designed and made in Lagos, Nigeria',
+      'Designed and bespoke, made in Abuja, Nigeria',
     ],
     fabric:
       'Both pieces: flowing crepe with a soft matte finish — 95% polyester, 5% elastane for subtle stretch and recovery.',
@@ -120,7 +120,7 @@ export const products: ProductDetail[] = [
       'Vertical multi-colour stripe panel on one side',
       'Side slits at the hem for movement',
       'Relaxed, oversized cut through the body',
-      'Designed and made in Lagos, Nigeria',
+      'Designed and bespoke, made in Abuja, Nigeria',
     ],
     fabric:
       '55% cotton, 45% linen — lightweight, breathable, and soft to the touch.',
