@@ -15,25 +15,39 @@ export default function Home() {
   // Gallery modal — index of the currently open image, or null if closed
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
 
-  // Page-tear transition — when active, plays the tear animation, then
-  // navigates to the pending href. `pendingHref` is the destination.
+  // Page-tear transition — when active, plays the tear animation. Navigation
+  // happens at the midpoint of the animation (350ms in) so the product page
+  // loads *beneath* the tearing panels. As the panels finish tearing away,
+  // the product page is revealed — making the tear feel like it's revealing
+  // the next page rather than just being a separate effect.
   const [tearActive, setTearActive] = useState(false);
   const pendingHrefRef = useRef<string | null>(null);
+  const hasNavigatedRef = useRef(false);
 
-  // Trigger the tear transition, then navigate on completion
+  // Trigger the tear transition, then navigate at the midpoint
   const navigateWithTear = useCallback((href: string) => {
     pendingHrefRef.current = href;
+    hasNavigatedRef.current = false;
     setTearActive(true);
-  }, []);
 
+    // Navigate at 350ms — the midpoint of the 700ms tear animation.
+    // The tear panels are at ~50% opacity/offset here, so the product
+    // page loads beneath them and is revealed as they finish tearing away.
+    setTimeout(() => {
+      const target = pendingHrefRef.current;
+      if (target && !hasNavigatedRef.current) {
+        hasNavigatedRef.current = true;
+        router.push(target);
+      }
+    }, 350);
+  }, [router]);
+
+  // Called when the tear animation fully completes — just cleans up state
   const handleTearComplete = useCallback(() => {
     setTearActive(false);
-    const href = pendingHrefRef.current;
-    if (href) {
-      pendingHrefRef.current = null;
-      router.push(href);
-    }
-  }, [router]);
+    pendingHrefRef.current = null;
+    hasNavigatedRef.current = false;
+  }, []);
 
   // Swipe/drag gesture state for the gallery modal
   // - touchStartRef: where the touch/press began (clientX)
@@ -339,24 +353,24 @@ export default function Home() {
           </div>
         </div>
 
-        {/* MODEL SILHOUETTES — extracted from the 3 bestseller images.
-            Positioned to flank the hero composition on desktop: two figures
-            on the left and far-right edges, each with a subtle independent
-            float animation for a quiet, breathing vibrancy. Hidden on mobile
-            to keep the small viewport clean (the LJ watermark suffices).
-            Each silhouette uses mix-blend-mode: multiply so it blends with
-            the hero gradient rather than sitting as a flat cutout. */}
+        {/* MODEL SILHOUETTES — extracted from bestseller + gallery images.
+            7 silhouettes total, positioned across the full width of the hero
+            to create a vibrant, populated editorial composition. Each has an
+            independent float animation (3 timing variants) so the motion
+            feels organic rather than synced. Hidden on mobile to keep the
+            small viewport clean (the LJ watermark suffices).
+            mix-blend-mode: multiply blends them with the hero gradient. */}
         <div
           className="hidden md:block absolute inset-0 z-[1] pointer-events-none"
           aria-hidden="true"
         >
-          {/* Silhouette 1 — left side, mid-height, subtle opacity */}
+          {/* Silhouette 1 (bestseller) — far left, tall, full opacity */}
           <div
             className="lj-silhouette-float absolute"
             style={{
-              left: '8%',
+              left: '2%',
               bottom: '0%',
-              opacity: 0.42,
+              opacity: 0.45,
               mixBlendMode: 'multiply' as const,
               filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
             }}
@@ -366,16 +380,111 @@ export default function Home() {
               alt=""
               width={280}
               height={500}
-              className="h-[42vh] w-auto"
+              className="h-[44vh] w-auto"
             />
           </div>
-          {/* Silhouette 3 — far right, slightly taller, different animation timing */}
+          {/* Silhouette 4 (gallery-1) — left-center, shorter, lower opacity */}
+          <div
+            className="lj-silhouette-float-2 absolute"
+            style={{
+              left: '18%',
+              bottom: '0%',
+              opacity: 0.28,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 6px 18px rgba(20,16,12,0.3))',
+            }}
+          >
+            <Image
+              src="/silhouette-4.png"
+              alt=""
+              width={240}
+              height={430}
+              className="h-[34vh] w-auto"
+            />
+          </div>
+          {/* Silhouette 2 (bestseller) — center-left, medium, behind the LJ watermark */}
           <div
             className="lj-silhouette-float-3 absolute"
             style={{
-              right: '4%',
+              left: '30%',
               bottom: '0%',
-              opacity: 0.38,
+              opacity: 0.22,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 6px 18px rgba(20,16,12,0.25))',
+            }}
+          >
+            <Image
+              src="/silhouette-2.png"
+              alt=""
+              width={260}
+              height={465}
+              className="h-[38vh] w-auto"
+            />
+          </div>
+          {/* Silhouette 5 (gallery-2) — center-right, medium, low opacity */}
+          <div
+            className="lj-silhouette-float absolute"
+            style={{
+              right: '28%',
+              bottom: '0%',
+              opacity: 0.24,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 6px 18px rgba(20,16,12,0.28))',
+            }}
+          >
+            <Image
+              src="/silhouette-5.png"
+              alt=""
+              width={240}
+              height={430}
+              className="h-[34vh] w-auto"
+            />
+          </div>
+          {/* Silhouette 6 (gallery-3) — right-center, taller, medium opacity */}
+          <div
+            className="lj-silhouette-float-2 absolute"
+            style={{
+              right: '16%',
+              bottom: '0%',
+              opacity: 0.30,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 6px 20px rgba(20,16,12,0.3))',
+            }}
+          >
+            <Image
+              src="/silhouette-6.png"
+              alt=""
+              width={260}
+              height={465}
+              className="h-[38vh] w-auto"
+            />
+          </div>
+          {/* Silhouette 7 (gallery-4) — far right, tall, medium opacity */}
+          <div
+            className="lj-silhouette-float-3 absolute"
+            style={{
+              right: '8%',
+              bottom: '0%',
+              opacity: 0.35,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 8px 22px rgba(20,16,12,0.32))',
+            }}
+          >
+            <Image
+              src="/silhouette-7.png"
+              alt=""
+              width={270}
+              height={482}
+              className="h-[40vh] w-auto"
+            />
+          </div>
+          {/* Silhouette 3 (bestseller) — far right edge, tallest, full opacity */}
+          <div
+            className="lj-silhouette-float absolute"
+            style={{
+              right: '1%',
+              bottom: '0%',
+              opacity: 0.40,
               mixBlendMode: 'multiply' as const,
               filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
             }}
@@ -383,8 +492,8 @@ export default function Home() {
             <Image
               src="/silhouette-3.png"
               alt=""
-              width={280}
-              height={500}
+              width={290}
+              height={518}
               className="h-[46vh] w-auto"
             />
           </div>
