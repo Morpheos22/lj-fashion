@@ -353,22 +353,100 @@ export default function Home() {
           </div>
         </div>
 
-        {/* MODEL SILHOUETTES — extracted from bestseller + gallery images.
-            7 silhouettes total, positioned across the full width of the hero
-            to create a vibrant, populated editorial composition. Each has an
-            independent float animation (3 timing variants) so the motion
-            feels organic rather than synced. Hidden on mobile to keep the
-            small viewport clean (the LJ watermark suffices).
-            mix-blend-mode: multiply blends them with the hero gradient. */}
+        {/* MODEL SILHOUETTES — 7 total in a professionally spaced editorial
+            composition. The 3 bestseller silhouettes form the centered focal
+            group (tallest, highest opacity). The 4 gallery silhouettes spread
+            outward from both sides — shorter and lighter at the edges, taller
+            and slightly more visible as they approach the center. This creates
+            a clear visual hierarchy: the bestsellers are the focus, the gallery
+            figures add context and vibrancy without competing.
+
+            Layout (left → right):
+              LEFT SIDE (gallery, spreading from edge toward center):
+                4%   — gallery-4, 30vh, 15% opacity (furthest left, most subtle)
+                15%  — gallery-5, 34vh, 20% opacity
+              CENTER (bestsellers — the focus):
+                36%  — bestseller-2, 42vh, 35% opacity (left anchor)
+                47%  — bestseller-1, 48vh, 45% opacity (hero figure, centered)
+                58%  — bestseller-3, 44vh, 38% opacity (right anchor)
+              RIGHT SIDE (gallery, spreading from center toward edge):
+                74%  — gallery-6, 36vh, 25% opacity
+                85%  — gallery-7, 32vh, 18% opacity (furthest right, most subtle)
+
+            Each silhouette has an independent float animation (3 timing
+            variants) for organic, unsynced motion. mix-blend-mode: multiply
+            blends them with the hero gradient. Hidden on mobile. */}
         <div
           className="hidden md:block absolute inset-0 z-[1] pointer-events-none"
           aria-hidden="true"
         >
-          {/* Silhouette 1 (bestseller) — far left, tall, full opacity */}
+          {/* ════════ LEFT SIDE — gallery silhouettes spreading from edge ════════ */}
+
+          {/* Gallery-4 — far left, shortest, most subtle */}
+          <div
+            className="lj-silhouette-float-3 absolute"
+            style={{
+              left: '4%',
+              bottom: '0%',
+              opacity: 0.15,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.2))',
+            }}
+          >
+            <Image
+              src="/silhouette-7.png"
+              alt=""
+              width={200}
+              height={357}
+              className="h-[30vh] w-auto"
+            />
+          </div>
+          {/* Gallery-5 — left, medium */}
           <div
             className="lj-silhouette-float absolute"
             style={{
-              left: '2%',
+              left: '15%',
+              bottom: '0%',
+              opacity: 0.20,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 5px 16px rgba(20,16,12,0.25))',
+            }}
+          >
+            <Image
+              src="/silhouette-5.png"
+              alt=""
+              width={220}
+              height={393}
+              className="h-[34vh] w-auto"
+            />
+          </div>
+
+          {/* ════════ CENTER — 3 bestseller silhouettes (the focus) ════════ */}
+
+          {/* Bestseller-2 — left anchor of center group */}
+          <div
+            className="lj-silhouette-float-2 absolute"
+            style={{
+              left: '36%',
+              bottom: '0%',
+              opacity: 0.35,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 6px 20px rgba(20,16,12,0.3))',
+            }}
+          >
+            <Image
+              src="/silhouette-2.png"
+              alt=""
+              width={260}
+              height={465}
+              className="h-[42vh] w-auto"
+            />
+          </div>
+          {/* Bestseller-1 — center, tallest, highest opacity (the hero figure) */}
+          <div
+            className="lj-silhouette-float absolute"
+            style={{
+              left: '47%',
               bottom: '0%',
               opacity: 0.45,
               mixBlendMode: 'multiply' as const,
@@ -378,123 +456,69 @@ export default function Home() {
             <Image
               src="/silhouette-1.png"
               alt=""
-              width={280}
-              height={500}
-              className="h-[44vh] w-auto"
+              width={300}
+              height={536}
+              className="h-[48vh] w-auto"
             />
           </div>
-          {/* Silhouette 4 (gallery-1) — left-center, shorter, lower opacity */}
-          <div
-            className="lj-silhouette-float-2 absolute"
-            style={{
-              left: '18%',
-              bottom: '0%',
-              opacity: 0.28,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 6px 18px rgba(20,16,12,0.3))',
-            }}
-          >
-            <Image
-              src="/silhouette-4.png"
-              alt=""
-              width={240}
-              height={430}
-              className="h-[34vh] w-auto"
-            />
-          </div>
-          {/* Silhouette 2 (bestseller) — center-left, medium, behind the LJ watermark */}
+          {/* Bestseller-3 — right anchor of center group */}
           <div
             className="lj-silhouette-float-3 absolute"
             style={{
-              left: '30%',
+              left: '58%',
               bottom: '0%',
-              opacity: 0.22,
+              opacity: 0.38,
               mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 6px 18px rgba(20,16,12,0.25))',
-            }}
-          >
-            <Image
-              src="/silhouette-2.png"
-              alt=""
-              width={260}
-              height={465}
-              className="h-[38vh] w-auto"
-            />
-          </div>
-          {/* Silhouette 5 (gallery-2) — center-right, medium, low opacity */}
-          <div
-            className="lj-silhouette-float absolute"
-            style={{
-              right: '28%',
-              bottom: '0%',
-              opacity: 0.24,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 6px 18px rgba(20,16,12,0.28))',
-            }}
-          >
-            <Image
-              src="/silhouette-5.png"
-              alt=""
-              width={240}
-              height={430}
-              className="h-[34vh] w-auto"
-            />
-          </div>
-          {/* Silhouette 6 (gallery-3) — right-center, taller, medium opacity */}
-          <div
-            className="lj-silhouette-float-2 absolute"
-            style={{
-              right: '16%',
-              bottom: '0%',
-              opacity: 0.30,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 6px 20px rgba(20,16,12,0.3))',
-            }}
-          >
-            <Image
-              src="/silhouette-6.png"
-              alt=""
-              width={260}
-              height={465}
-              className="h-[38vh] w-auto"
-            />
-          </div>
-          {/* Silhouette 7 (gallery-4) — far right, tall, medium opacity */}
-          <div
-            className="lj-silhouette-float-3 absolute"
-            style={{
-              right: '8%',
-              bottom: '0%',
-              opacity: 0.35,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 8px 22px rgba(20,16,12,0.32))',
-            }}
-          >
-            <Image
-              src="/silhouette-7.png"
-              alt=""
-              width={270}
-              height={482}
-              className="h-[40vh] w-auto"
-            />
-          </div>
-          {/* Silhouette 3 (bestseller) — far right edge, tallest, full opacity */}
-          <div
-            className="lj-silhouette-float absolute"
-            style={{
-              right: '1%',
-              bottom: '0%',
-              opacity: 0.40,
-              mixBlendMode: 'multiply' as const,
-              filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
+              filter: 'drop-shadow(0 7px 22px rgba(20,16,12,0.32))',
             }}
           >
             <Image
               src="/silhouette-3.png"
               alt=""
-              width={290}
-              height={518}
-              className="h-[46vh] w-auto"
+              width={280}
+              height={500}
+              className="h-[44vh] w-auto"
+            />
+          </div>
+
+          {/* ════════ RIGHT SIDE — gallery silhouettes spreading to edge ════════ */}
+
+          {/* Gallery-6 — right, medium */}
+          <div
+            className="lj-silhouette-float-2 absolute"
+            style={{
+              left: '74%',
+              bottom: '0%',
+              opacity: 0.25,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 5px 18px rgba(20,16,12,0.28))',
+            }}
+          >
+            <Image
+              src="/silhouette-6.png"
+              alt=""
+              width={240}
+              height={429}
+              className="h-[36vh] w-auto"
+            />
+          </div>
+          {/* Gallery-7 — far right, shortest, most subtle */}
+          <div
+            className="lj-silhouette-float absolute"
+            style={{
+              left: '85%',
+              bottom: '0%',
+              opacity: 0.18,
+              mixBlendMode: 'multiply' as const,
+              filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.22))',
+            }}
+          >
+            <Image
+              src="/silhouette-7.png"
+              alt=""
+              width={210}
+              height={375}
+              className="h-[32vh] w-auto"
             />
           </div>
         </div>
@@ -600,6 +624,7 @@ export default function Home() {
               sizes="(max-width: 768px) 50vw, 25vw"
               className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
               priority={false}
+              loading="lazy"
             />
             {/* Top cream fade — magazine-print effect, intensifies on hover */}
             <div
@@ -634,6 +659,7 @@ export default function Home() {
               sizes="(max-width: 768px) 50vw, 25vw"
               className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
               priority={false}
+              loading="lazy"
             />
             <div
               className="pointer-events-none absolute inset-x-0 top-0 h-[22%] opacity-70 transition-opacity duration-500 group-hover:opacity-90"
@@ -666,6 +692,7 @@ export default function Home() {
               sizes="(max-width: 768px) 100vw, 25vw"
               className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
               priority={false}
+              loading="lazy"
             />
             <div
               className="pointer-events-none absolute inset-x-0 top-0 h-[22%] opacity-70 transition-opacity duration-500 group-hover:opacity-90"
@@ -728,6 +755,7 @@ export default function Home() {
                   sizes="(max-width: 768px) 45vw, 22vw"
                   className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.08]"
                   priority={false}
+              loading="lazy"
                 />
                 {/* Inner cream ring — keeps the circular edge crisp against the photo */}
                 <div
@@ -873,6 +901,7 @@ export default function Home() {
                 fill
                 sizes="(max-width: 768px) 50vw, 25vw"
                 quality={90}
+                loading="lazy"
                 className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
               />
               <div
