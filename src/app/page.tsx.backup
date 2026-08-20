@@ -1,0 +1,1275 @@
+'use client';
+
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { LjLogo } from '@/components/lj-logo';
+import { PageTearTransition } from '@/components/page-tear-transition';
+
+export default function Home() {
+  const router = useRouter();
+
+  // Mobile nav toggle
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Gallery modal — index of the currently open image, or null if closed
+  const [galleryIndex, setGalleryIndex] = useState<number | null>(null);
+
+  // Page-tear transition — when active, plays the tear animation. Navigation
+  // happens at the midpoint of the animation (350ms in) so the product page
+  // loads *beneath* the tearing panels. As the panels finish tearing away,
+  // the product page is revealed — making the tear feel like it's revealing
+  // the next page rather than just being a separate effect.
+  const [tearActive, setTearActive] = useState(false);
+  const pendingHrefRef = useRef<string | null>(null);
+  const hasNavigatedRef = useRef(false);
+
+  // Trigger the tear transition, then navigate at the midpoint
+  const navigateWithTear = useCallback((href: string) => {
+    pendingHrefRef.current = href;
+    hasNavigatedRef.current = false;
+    setTearActive(true);
+
+    // Navigate at 350ms — the midpoint of the 700ms tear animation.
+    // The tear panels are at ~50% opacity/offset here, so the product
+    // page loads beneath them and is revealed as they finish tearing away.
+    setTimeout(() => {
+      const target = pendingHrefRef.current;
+      if (target && !hasNavigatedRef.current) {
+        hasNavigatedRef.current = true;
+        router.push(target);
+      }
+    }, 350);
+  }, [router]);
+
+  // Called when the tear animation fully completes — just cleans up state
+  const handleTearComplete = useCallback(() => {
+    setTearActive(false);
+    pendingHrefRef.current = null;
+    hasNavigatedRef.current = false;
+  }, []);
+
+  // Swipe/drag gesture state for the gallery modal
+  // - touchStartRef: where the touch/press began (clientX)
+  // - touchDeltaRef: live offset during the drag (ref for synchronous reads
+  //   in handleDragEnd; state is async and would read stale values)
+  // - touchDelta (state): drives the visual transform on the image
+  const touchStartRef = useRef<number | null>(null);
+  const touchDeltaRef = useRef(0);
+  const [touchDelta, setTouchDelta] = useState(0);
+
+  // IntersectionObserver for fade-up scroll animations (matches original design behaviour)
+  useEffect(() => {
+    const els = document.querySelectorAll('.lj-fade-up');
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible');
+            obs.unobserve(e.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+    els.forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
+  }, []);
+
+  const INSTAGRAM_URL = 'https://www.instagram.com/lindajoweigha?igsh=ZmFoaTA4eTRveTBw&utm_source=qr';
+  const TIKTOK_URL = 'https://www.tiktok.com/@lindajoweigha';
+
+  const categories = [
+    {
+      label: 'Dresses',
+      img: '/cat-dresses.jpg',
+      alt: 'Pink maxi dresses and kaftans on hangers',
+      href: INSTAGRAM_URL,
+    },
+    {
+      label: 'Modest Wear',
+      img: '/cat-modest-wear.jpg',
+      alt: 'Model in powder blue kaftan with white wide-leg trousers',
+      href: INSTAGRAM_URL,
+    },
+    {
+      label: 'Occasion Wear',
+      img: '/cat-occasion-wear.jpg',
+      alt: 'Yellow eyelet lace dress with rhinestone detailing on hanger',
+      href: TIKTOK_URL,
+    },
+    {
+      label: 'Bottoms',
+      img: '/cat-bottoms.jpg',
+      alt: 'Wide-leg trousers in burgundy, white, and patterned blue on hangers',
+      href: TIKTOK_URL,
+    },
+  ];
+
+  // Gallery images — each has a caption for the modal view
+  const galleryImages = [
+    {
+      src: '/gallery-1.jpg',
+      alt: 'LJ look — brown V-neck blouse with wide-leg black trousers, styled with a monogram bag',
+      caption: 'The Earth Tone Edit',
+      subcaption: 'Brown V-neck blouse · wide-leg trousers · monogram bag',
+    },
+    {
+      src: '/gallery-2.jpg',
+      alt: 'LJ look — chocolate brown two-piece set with blouse and high-waisted shorts',
+      caption: 'The Chocolate Set',
+      subcaption: 'Two-piece co-ord · blouse · high-waisted shorts',
+    },
+    {
+      src: '/gallery-3.jpg',
+      alt: 'LJ look — black textured top layered over white shirt with asymmetrical striped skirt',
+      caption: 'The Layered Statement',
+      subcaption: 'Black textured top · striped shirt · asymmetrical skirt',
+    },
+    {
+      src: '/gallery-4.jpg',
+      alt: 'LJ look — long black button-front abaya with subtle tiered hem',
+      caption: 'The Black Abaya',
+      subcaption: 'Button-front maxi · tiered hem · modest silhouette',
+    },
+  ];
+
+  // Gallery modal navigation
+  const closeGallery = useCallback(() => setGalleryIndex(null), []);
+  const nextImage = useCallback(() => {
+    setGalleryIndex((curr) =>
+      curr === null ? null : (curr + 1) % galleryImages.length
+    );
+  }, [galleryImages.length]);
+  const prevImage = useCallback(() => {
+    setGalleryIndex((curr) =>
+      curr === null ? null : (curr - 1 + galleryImages.length) % galleryImages.length
+    );
+  }, [galleryImages.length]);
+
+  // Lock body scroll when modal is open + handle Escape/arrow keys
+  useEffect(() => {
+    if (galleryIndex !== null) {
+      document.body.style.overflow = 'hidden';
+      const handleKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') closeGallery();
+        if (e.key === 'ArrowRight') nextImage();
+        if (e.key === 'ArrowLeft') prevImage();
+      };
+      window.addEventListener('keydown', handleKey);
+      return () => {
+        document.body.style.overflow = '';
+        window.removeEventListener('keydown', handleKey);
+      };
+    }
+  }, [galleryIndex, closeGallery, nextImage, prevImage]);
+
+  // Swipe/drag gesture handlers — used by both touch (mobile) and mouse
+  // (desktop) drag on the modal image area. Threshold of 50px determines
+  // a "swipe" vs a tap/click. The live touchDelta gives visual feedback
+  // by offsetting the image during the drag.
+  const SWIPE_THRESHOLD = 50;
+
+  const handleDragStart = useCallback((clientX: number) => {
+    touchStartRef.current = clientX;
+    touchDeltaRef.current = 0;
+    setTouchDelta(0);
+  }, []);
+
+  const handleDragMove = useCallback((clientX: number) => {
+    if (touchStartRef.current === null) return;
+    const delta = clientX - touchStartRef.current;
+    touchDeltaRef.current = delta;
+    setTouchDelta(delta);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    if (touchStartRef.current === null) return;
+    const delta = touchDeltaRef.current;
+    touchStartRef.current = null;
+    touchDeltaRef.current = 0;
+    setTouchDelta(0);
+    if (Math.abs(delta) >= SWIPE_THRESHOLD) {
+      if (delta > 0) {
+        // Swiped right → previous image
+        prevImage();
+      } else {
+        // Swiped left → next image
+        nextImage();
+      }
+    }
+  }, [prevImage, nextImage]);
+
+  // Touch handlers (mobile)
+  const onTouchStart = useCallback(
+    (e: React.TouchEvent) => handleDragStart(e.touches[0].clientX),
+    [handleDragStart]
+  );
+  const onTouchMove = useCallback(
+    (e: React.TouchEvent) => handleDragMove(e.touches[0].clientX),
+    [handleDragMove]
+  );
+  const onTouchEnd = useCallback(() => handleDragEnd(), [handleDragEnd]);
+
+  // Mouse handlers (desktop drag) — mousedown on image, track mousemove,
+  // end on mouseup. We attach move/up listeners to window so the drag
+  // continues even if the cursor leaves the image bounds.
+  const onMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      // Only respond to left click
+      if (e.button !== 0) return;
+      e.preventDefault();
+      handleDragStart(e.clientX);
+      const onMove = (ev: MouseEvent) => handleDragMove(ev.clientX);
+      const onUp = () => {
+        handleDragEnd();
+        window.removeEventListener('mousemove', onMove);
+        window.removeEventListener('mouseup', onUp);
+      };
+      window.addEventListener('mousemove', onMove);
+      window.addEventListener('mouseup', onUp);
+    },
+    [handleDragStart, handleDragMove, handleDragEnd]
+  );
+
+  return (
+    <main className="bg-background text-foreground min-h-screen">
+      {/* NAV — overlays hero (dark image) so use the LIGHT logo variant.
+          mix-blend-difference keeps it readable on any backdrop.
+          Mobile: hamburger toggles a dropdown panel. */}
+      <nav className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-[5vw] py-[18px] sm:py-[26px] text-white mix-blend-difference">
+        <div
+          className="flex items-center gap-2 sm:gap-3 text-[13px] sm:text-[15px] tracking-[0.3em] sm:tracking-[0.35em]"
+          style={{ fontFamily: 'var(--font-jost)' }}
+        >
+          <LjLogo variant="light" size={32} alt="LJ Fashion" />
+          <span>LJ&nbsp;FASHION</span>
+        </div>
+        {/* Desktop nav */}
+        <div className="hidden md:flex gap-9 text-xs tracking-[0.18em] uppercase">
+          <a href="#bestsellers" className="opacity-85 hover:opacity-100 transition-opacity">
+            Bestsellers
+          </a>
+          <a href="#shop" className="opacity-85 hover:opacity-100 transition-opacity">
+            Shop
+          </a>
+          <a href="/our-story" className="opacity-85 hover:opacity-100 transition-opacity">
+            Our Story
+          </a>
+          <a href="#contact" className="opacity-85 hover:opacity-100 transition-opacity">
+            Contact
+          </a>
+        </div>
+        {/* Mobile hamburger */}
+        <button
+          type="button"
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((v) => !v)}
+          className="md:hidden flex flex-col justify-center items-end gap-[5px] p-2 -mr-2"
+        >
+          <span
+            className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? 'translate-y-[6px] rotate-45' : ''}`}
+          />
+          <span
+            className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`}
+          />
+          <span
+            className={`block w-6 h-px bg-white transition-all duration-300 ${menuOpen ? '-translate-y-[6px] -rotate-45' : ''}`}
+          />
+        </button>
+      </nav>
+      {/* Mobile dropdown panel */}
+      {menuOpen && (
+        <div
+          className="md:hidden fixed top-[60px] left-0 right-0 z-40 bg-[var(--ink)]/95 backdrop-blur-sm text-white py-6 px-[5vw]"
+          style={{ background: 'rgba(28,25,23,0.96)' }}
+        >
+          <div className="flex flex-col gap-5 text-sm tracking-[0.18em] uppercase">
+            <a href="#bestsellers" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Bestsellers</a>
+            <a href="#shop" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Shop</a>
+            <a href="/our-story" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Our Story</a>
+            <a href="#contact" onClick={() => setMenuOpen(false)} className="opacity-85 hover:opacity-100">Contact</a>
+          </div>
+        </div>
+      )}
+
+      {/* HERO */}
+      <section className="relative h-screen min-h-[640px] flex items-end overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(120% 90% at 30% 10%, #EDE3D2 0%, transparent 55%), linear-gradient(160deg, #DED0B8 0%, #C7B79C 38%, #9C8A72 70%, #6E5F4E 100%)',
+          }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'linear-gradient(0deg, rgba(20,16,12,0.55) 0%, rgba(20,16,12,0.08) 42%, transparent 70%)',
+          }}
+        />
+
+        {/* BOLD LJ LOGO WATERMARK — large, right-side on desktop; smaller
+            and centered behind the hero text on mobile so it doesn't crowd
+            the headline. Dark radial backdrop + double drop-shadow make the
+            thin-line monogram read as bold. */}
+        <div
+          className="absolute z-[1] pointer-events-none flex items-center justify-center
+                     right-[5vw] top-1/2 -translate-y-1/2
+                     max-md:right-auto max-md:top-[42%] max-md:left-1/2 max-md:-translate-x-1/2 max-md:-translate-y-1/2"
+          aria-hidden="true"
+        >
+          {/* Soft dark radial backdrop — creates contrast behind the thin-line logo */}
+          <div
+            className="absolute"
+            style={{
+              width: 'clamp(220px,32vw,460px)',
+              height: 'clamp(220px,32vw,460px)',
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle, rgba(20,16,12,0.55) 0%, rgba(20,16,12,0.32) 45%, rgba(20,16,12,0) 72%)',
+            }}
+          />
+          {/* The logo itself — light ink with strong drop-shadow for boldness.
+              Filter is applied to the wrapper div so the shadow renders on the
+              logo's actual stroke pixels (not the bounding box).
+              Mobile: smaller and lower opacity so it sits as a watermark behind
+              the hero text without competing for attention. */}
+          <div
+            style={{
+              filter:
+                'drop-shadow(0 4px 18px rgba(0,0,0,0.55)) drop-shadow(0 1px 4px rgba(0,0,0,0.45))',
+            }}
+            className="relative flex items-center justify-center max-md:opacity-60"
+          >
+            <LjLogo
+              variant="light"
+              size={280}
+              alt=""
+              className="w-[clamp(140px,22vw,340px)] h-[clamp(140px,22vw,340px)] max-md:w-[clamp(180px,55vw,260px)] max-md:h-[clamp(180px,55vw,260px)]"
+            />
+          </div>
+        </div>
+
+        {/* MODEL SILHOUETTES — 7 total in a professionally spaced editorial
+            composition. The 3 bestseller silhouettes form the centered focal
+            group (tallest, highest opacity). The 4 gallery silhouettes spread
+            outward from both sides — shorter and lighter at the edges, taller
+            and slightly more visible as they approach the center. This creates
+            a clear visual hierarchy: the bestsellers are the focus, the gallery
+            figures add context and vibrancy without competing.
+
+            Layout (left → right):
+              LEFT SIDE (gallery, spreading from edge toward center):
+                4%   — gallery-4, 30vh, 15% opacity (furthest left, most subtle)
+                15%  — gallery-5, 34vh, 20% opacity
+              CENTER (bestsellers — the focus):
+                36%  — bestseller-2, 42vh, 35% opacity (left anchor)
+                47%  — bestseller-1, 48vh, 45% opacity (hero figure, centered)
+                58%  — bestseller-3, 44vh, 38% opacity (right anchor)
+              RIGHT SIDE (gallery, spreading from center toward edge):
+                74%  — gallery-6, 36vh, 25% opacity
+                85%  — gallery-7, 32vh, 18% opacity (furthest right, most subtle)
+
+            Each silhouette has an independent float animation (3 timing
+            variants) for organic, unsynced motion. mix-blend-mode: multiply
+            blends them with the hero gradient. Hidden on mobile. */}
+        <div
+          className="hidden md:block absolute inset-0 z-[1] pointer-events-none"
+          aria-hidden="true"
+        >
+          {/* ════════ LEFT SIDE — gallery silhouettes spreading from edge ════════ */}
+
+          {/* Gallery-4 — far left, shortest, most subtle */}
+          <div
+            className="absolute lj-silhouette-enter"
+            style={{
+              left: '4%',
+              bottom: '0%',
+              animationDelay: '0.6s',
+            }}
+          >
+            <div
+              className="lj-silhouette-float-3"
+              style={{
+                opacity: 0.15,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.2))',
+              }}
+            >
+              <Image
+                src="/silhouette-7.png"
+                alt=""
+                width={200}
+                height={357}
+                className="h-[30vh] w-auto"
+              />
+            </div>
+          </div>
+          {/* Gallery-5 — left, medium */}
+          <div
+            className="absolute lj-silhouette-enter"
+            style={{
+              left: '15%',
+              bottom: '0%',
+              animationDelay: '0.4s',
+            }}
+          >
+            <div
+              className="lj-silhouette-float"
+              style={{
+                opacity: 0.20,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 5px 16px rgba(20,16,12,0.25))',
+              }}
+            >
+              <Image
+                src="/silhouette-5.png"
+                alt=""
+                width={220}
+                height={393}
+                className="h-[34vh] w-auto"
+              />
+            </div>
+          </div>
+
+          {/* ════════ CENTER — 3 bestseller silhouettes (the focus) ════════ */}
+
+          {/* Bestseller-2 — left anchor of center group */}
+          <div
+            className="absolute lj-silhouette-enter"
+            style={{
+              left: '36%',
+              bottom: '0%',
+              animationDelay: '0.2s',
+            }}
+          >
+            <div
+              className="lj-silhouette-float-2"
+              style={{
+                opacity: 0.35,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 6px 20px rgba(20,16,12,0.3))',
+              }}
+            >
+              <Image
+                src="/silhouette-2.png"
+                alt=""
+                width={260}
+                height={465}
+                className="h-[42vh] w-auto"
+              />
+            </div>
+          </div>
+          {/* Bestseller-1 — center, tallest, highest opacity (the hero figure) */}
+          <div
+            className="absolute lj-silhouette-enter"
+            style={{
+              left: '47%',
+              bottom: '0%',
+              animationDelay: '0s',
+            }}
+          >
+            <div
+              className="lj-silhouette-float"
+              style={{
+                opacity: 0.45,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 8px 24px rgba(20,16,12,0.35))',
+              }}
+            >
+              <Image
+                src="/silhouette-1.png"
+                alt=""
+                width={300}
+                height={536}
+                className="h-[48vh] w-auto"
+                fetchPriority="high"
+              />
+            </div>
+          </div>
+          {/* Bestseller-3 — right anchor of center group */}
+          <div
+            className="absolute lj-silhouette-enter"
+            style={{
+              left: '58%',
+              bottom: '0%',
+              animationDelay: '0.2s',
+            }}
+          >
+            <div
+              className="lj-silhouette-float-3"
+              style={{
+                opacity: 0.38,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 7px 22px rgba(20,16,12,0.32))',
+              }}
+            >
+              <Image
+                src="/silhouette-3.png"
+                alt=""
+                width={280}
+                height={500}
+                className="h-[44vh] w-auto"
+              />
+            </div>
+          </div>
+
+          {/* ════════ RIGHT SIDE — gallery silhouettes spreading to edge ════════ */}
+
+          {/* Gallery-6 — right, medium */}
+          <div
+            className="absolute lj-silhouette-enter"
+            style={{
+              left: '74%',
+              bottom: '0%',
+              animationDelay: '0.4s',
+            }}
+          >
+            <div
+              className="lj-silhouette-float-2"
+              style={{
+                opacity: 0.25,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 5px 18px rgba(20,16,12,0.28))',
+              }}
+            >
+              <Image
+                src="/silhouette-6.png"
+                alt=""
+                width={240}
+                height={429}
+                className="h-[36vh] w-auto"
+              />
+            </div>
+          </div>
+          {/* Gallery-7 — far right, shortest, most subtle */}
+          <div
+            className="absolute lj-silhouette-enter"
+            style={{
+              left: '85%',
+              bottom: '0%',
+              animationDelay: '0.6s',
+            }}
+          >
+            <div
+              className="lj-silhouette-float"
+              style={{
+                opacity: 0.18,
+                mixBlendMode: 'multiply' as const,
+                filter: 'drop-shadow(0 4px 14px rgba(20,16,12,0.22))',
+              }}
+            >
+              <Image
+                src="/silhouette-7.png"
+                alt=""
+                width={210}
+                height={375}
+                className="h-[32vh] w-auto"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Hero text — z-[3] so it sits above the watermark on mobile */}
+        <div className="relative z-[3] w-full px-[5vw] pb-[60px] sm:pb-[68px] text-white flex flex-col items-start gap-[14px] sm:gap-[18px] max-w-[640px]">
+          <span className="lj-eyebrow" style={{ color: '#EFE6D4' }}>
+            Designed Beyond the Trend
+          </span>
+          <h1
+            className="lj-heading text-[clamp(34px,7vw,84px)] leading-[1.05] max-w-[900px] font-normal"
+          >
+            Your wardrobe,
+            <br />
+            working for you.
+          </h1>
+          <p
+            className="text-[14px] sm:text-[15px] leading-[1.7] max-w-[420px] font-light"
+            style={{ color: '#F2EBDD' }}
+          >
+            Versatile, comfortable, timeless — pieces you&apos;ll return to season after
+            season.
+          </p>
+        </div>
+        <div
+          className="absolute bottom-[26px] right-[5vw] z-[2] text-white text-[11px] tracking-[0.25em] uppercase flex items-center gap-3 opacity-75"
+          style={{ writingMode: 'vertical-rl' }}
+        >
+          Scroll
+          <span className="block w-px h-[46px] bg-white opacity-60" />
+        </div>
+      </section>
+
+      {/* INTRO */}
+      <section className="lj-fade-up py-[80px] sm:py-[120px] px-[5vw] pb-[70px] sm:pb-[100px] grid gap-7 sm:gap-9 max-w-[760px] mx-auto text-center">
+        <h2
+          className="text-[clamp(26px,3.4vw,40px)] leading-[1.35] font-normal italic"
+          style={{ fontFamily: 'var(--font-cormorant)', color: 'var(--ink-soft)' }}
+        >
+          &ldquo;We believe getting dressed should feel effortless — never a compromise
+          between comfort and style.&rdquo;
+        </h2>
+        <div
+          className="flex justify-center items-center gap-[14px] sm:gap-[22px] text-[10px] sm:text-[11px] tracking-[0.24em] sm:tracking-[0.28em] uppercase flex-wrap"
+          style={{ color: 'var(--taupe)' }}
+        >
+          <span>Quality</span>
+          <span style={{ color: 'var(--line)' }}>•</span>
+          <span>Comfort</span>
+          <span style={{ color: 'var(--line)' }}>•</span>
+          <span>Timeless Design</span>
+        </div>
+      </section>
+
+      {/* BESTSELLERS — editorial 2-image layout with real product photography.
+          Both images have been pre-treated with a warm cream edge blend so
+          their white studio backgrounds harmonize with the cream theme.
+          Layout: text left, 2-image grid right (stacked on mobile). */}
+      <section
+        id="bestsellers"
+        className="lj-fade-up relative grid grid-cols-1 min-h-[78vh] md:grid-cols-[0.85fr_1.15fr]"
+      >
+        <div
+          className="flex flex-col justify-center gap-5 py-[48px] sm:py-[64px] px-[8%] order-2 md:order-1"
+          style={{ background: 'var(--cream-deep)' }}
+        >
+          <span className="lj-eyebrow">Fan Favorites</span>
+          <h2 className="lj-heading text-[clamp(28px,3.6vw,48px)]">Bestsellers</h2>
+          <p className="text-[14px] sm:text-[14.5px] leading-[1.8] max-w-[340px]" style={{ color: 'var(--ink-soft)' }}>
+            The pieces our customers keep coming back for — loved for their flattering fit,
+            considered fabrics, and quiet, timeless style.
+          </p>
+          <a
+            href="https://www.instagram.com/lindajoweigha?igsh=ZmFoaTA4eTRveTBw&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group mt-2.5 inline-flex items-center gap-3 text-[11px] tracking-[0.24em] uppercase border-b border-current pb-1.5 w-fit hover:tracking-[0.32em] hover:gap-4 hover:opacity-70 transition-all"
+          >
+            Shop Bestsellers
+            <span className="inline-block transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </a>
+        </div>
+        {/* 3-image editorial grid — each tile is a hover group with
+            a slow scale zoom + cream gradient overlays (top & bottom)
+            for a magazine-print finish. Desktop: 3 equal columns.
+            Mobile: 2 columns with the 3rd image spanning full width
+            below for an editorial asymmetric feel. */}
+        <div className="relative order-1 md:order-2 grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 p-4 sm:p-6 md:p-8" style={{ background: 'var(--cream)' }}>
+          {/* Image 1 — clicking triggers the page-tear transition, then
+              navigates to the product page */}
+          <button
+            type="button"
+            onClick={() => navigateWithTear('/products/layered-asymmetrical-top')}
+            className="group relative overflow-hidden col-span-1 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block cursor-pointer w-full text-left"
+            aria-label="View bestseller — layered asymmetrical top with striped shirt"
+          >
+            <Image
+              src="/bestseller-1.jpg"
+              alt="LJ bestseller — layered asymmetrical top with striped shirt"
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+              priority={false}
+              loading="lazy"
+            />
+            {/* Top cream fade — magazine-print effect, intensifies on hover */}
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-[22%] opacity-70 transition-opacity duration-500 group-hover:opacity-90"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, rgba(248,243,234,0) 100%)' }}
+              aria-hidden="true"
+            />
+            {/* Bottom cream-deep fade — grounds the image, intensifies on hover */}
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] opacity-60 transition-opacity duration-500 group-hover:opacity-85"
+              style={{ background: 'linear-gradient(0deg, var(--cream-deep) 0%, rgba(241,233,219,0) 100%)' }}
+              aria-hidden="true"
+            />
+            {/* Hover "View" affordance — fades + lifts in on hover */}
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-6 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+              <span className="text-[10px] tracking-[0.32em] uppercase text-[var(--ink)] bg-[var(--cream)]/85 px-4 py-2 backdrop-blur-sm" style={{ background: 'rgba(248,243,234,0.88)' }}>
+                View Piece
+              </span>
+            </div>
+          </button>
+          {/* Image 2 */}
+          <button
+            type="button"
+            onClick={() => navigateWithTear('/products/black-shirt-dress')}
+            className="group relative overflow-hidden col-span-1 min-h-[340px] sm:min-h-[480px] md:min-h-[560px] block"
+            aria-label="View bestseller — long black button-up shirt dress with wide-leg trousers"
+          >
+            <Image
+              src="/bestseller-2.jpg"
+              alt="LJ bestseller — long black button-up shirt dress with wide-leg trousers"
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+              priority={false}
+              loading="lazy"
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-[22%] opacity-70 transition-opacity duration-500 group-hover:opacity-90"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, rgba(248,243,234,0) 100%)' }}
+              aria-hidden="true"
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] opacity-60 transition-opacity duration-500 group-hover:opacity-85"
+              style={{ background: 'linear-gradient(0deg, var(--cream-deep) 0%, rgba(241,233,219,0) 100%)' }}
+              aria-hidden="true"
+            />
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-6 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+              <span className="text-[10px] tracking-[0.32em] uppercase text-[var(--ink)] bg-[var(--cream)]/85 px-4 py-2 backdrop-blur-sm" style={{ background: 'rgba(248,243,234,0.88)' }}>
+                View Piece
+              </span>
+            </div>
+          </button>
+          {/* Image 3 — spans full width on mobile (col-span-2) for editorial
+              asymmetry; single column on desktop like the others */}
+          <button
+            type="button"
+            onClick={() => navigateWithTear('/products/pink-striped-kaftan')}
+            className="group relative overflow-hidden col-span-2 md:col-span-1 min-h-[340px] sm:min-h-[400px] md:min-h-[560px] block cursor-pointer w-full text-left"
+            aria-label="View bestseller — pink striped kaftan maxi dress"
+          >
+            <Image
+              src="/bestseller-3.jpg"
+              alt="LJ bestseller — pink striped kaftan maxi dress with side slits"
+              fill
+              sizes="(max-width: 768px) 100vw, 25vw"
+              className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+              priority={false}
+              loading="lazy"
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 top-0 h-[22%] opacity-70 transition-opacity duration-500 group-hover:opacity-90"
+              style={{ background: 'linear-gradient(180deg, var(--cream) 0%, rgba(248,243,234,0) 100%)' }}
+              aria-hidden="true"
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[28%] opacity-60 transition-opacity duration-500 group-hover:opacity-85"
+              style={{ background: 'linear-gradient(0deg, var(--cream-deep) 0%, rgba(241,233,219,0) 100%)' }}
+              aria-hidden="true"
+            />
+            <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-6 opacity-0 translate-y-2 transition-all duration-500 group-hover:opacity-100 group-hover:translate-y-0">
+              <span className="text-[10px] tracking-[0.32em] uppercase text-[var(--ink)] bg-[var(--cream)]/85 px-4 py-2 backdrop-blur-sm" style={{ background: 'rgba(248,243,234,0.88)' }}>
+                View Piece
+              </span>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      {/* FIND YOUR SIGNATURE */}
+      <section id="shop" className="lj-fade-up py-[80px] sm:py-[120px] px-[5vw] text-center">
+        <span className="lj-eyebrow block mb-3.5">Shop LJ</span>
+        <h2 className="lj-heading text-[clamp(28px,4vw,52px)] mb-4">Find Your Signature.</h2>
+        <p
+          className="max-w-[480px] mx-auto mb-10 sm:mb-16 text-[14px] sm:text-[14.5px] leading-[1.8] px-2"
+          style={{ color: 'var(--ink-soft)' }}
+        >
+          Explore our collection of thoughtfully selected pieces, designed for effortless
+          everyday style.
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-7 max-w-[920px] mx-auto">
+          {categories.map((cat) => (
+            <a
+              key={cat.label}
+              href={cat.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-5 group"
+              aria-label={`Browse ${cat.label} on ${cat.href.includes('instagram') ? 'Instagram' : 'TikTok'}`}
+            >
+              {/* Circular image tile — real product photo with object-cover.
+                  Subtle inner ring + slow scale zoom on hover for editorial feel.
+                  A soft cream edge vignette is baked into the image so the
+                  photo blends into any background. */}
+              <div
+                className="w-full aspect-square rounded-full relative overflow-hidden border transition-all duration-500 group-hover:scale-[1.04] shadow-[0_2px_18px_rgba(28,25,23,0.06)]"
+                style={{ borderColor: 'var(--line)' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--taupe)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'var(--line)';
+                }}
+              >
+                <Image
+                  src={cat.img}
+                  alt={cat.alt}
+                  fill
+                  sizes="(max-width: 768px) 45vw, 22vw"
+                  className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-[1.08]"
+                  priority={false}
+              loading="lazy"
+                />
+                {/* Inner cream ring — keeps the circular edge crisp against the photo */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-full"
+                  style={{ boxShadow: 'inset 0 0 0 1px rgba(248,243,234,0.4)' }}
+                  aria-hidden="true"
+                />
+              </div>
+              <span
+                className="text-[11px] sm:text-xs tracking-[0.2em] sm:tracking-[0.22em] uppercase transition-colors duration-300 group-hover:text-[var(--ink)]"
+                style={{ color: 'var(--ink-soft)' }}
+              >
+                {cat.label}
+              </span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      {/* OUR PROMISE — dark interstitial with subtle embossed LJ watermark
+          behind the content. Watermark is large, low-opacity, and centered
+          so it reads as a textured brand mark rather than a focal element. */}
+      <section className="lj-fade-up relative min-h-[64vh] flex items-center justify-center text-center text-white py-[80px] sm:py-[100px] px-[6vw] overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(180deg,#3A342B,#1C1815 70%)' }}
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(60% 60% at 50% 20%, rgba(230,214,182,0.16), transparent 70%)',
+          }}
+        />
+        {/* Subtle embossed LJ watermark — large, behind content, very low opacity */}
+        <div
+          className="absolute z-[1] pointer-events-none flex items-center justify-center inset-0"
+          aria-hidden="true"
+        >
+          <div
+            style={{
+              filter:
+                'drop-shadow(0 2px 12px rgba(0,0,0,0.4))',
+            }}
+            className="relative flex items-center justify-center opacity-[0.10]"
+          >
+            <LjLogo
+              variant="light"
+              size={420}
+              alt=""
+              className="w-[clamp(280px,40vw,520px)] h-[clamp(280px,40vw,520px)] max-w-[80vw] max-h-[80vh]"
+            />
+          </div>
+        </div>
+        <div className="relative z-[2] max-w-[600px] px-2">
+          <span className="lj-eyebrow" style={{ color: '#C9B896' }}>
+            Our Promise
+          </span>
+          <h2 className="lj-heading text-[clamp(26px,3.8vw,46px)] my-[16px] sm:my-[18px] mx-0 font-normal leading-[1.15]">
+            Every LJ piece is selected or designed with intention.
+          </h2>
+          <p className="text-[14px] sm:text-[14.5px] leading-[1.85] mb-7 px-2" style={{ color: '#EAE1CF' }}>
+            We care about how it looks, how it feels, and how easily it becomes part of
+            your wardrobe.
+          </p>
+          <p className="lj-heading italic text-[18px] sm:text-[19px] leading-[1.7]">
+            <b className="font-medium not-italic">Timeless. Effortless. Intentional.</b>
+            <br />
+            That&apos;s LJ.
+          </p>
+        </div>
+      </section>
+
+      {/* STORY TEASER */}
+      <section
+        id="story"
+        className="lj-fade-up grid grid-cols-1 min-h-[60vh] sm:min-h-[70vh] md:grid-cols-2"
+      >
+        <div
+          className="min-h-[300px] sm:min-h-[380px]"
+          style={{ background: 'linear-gradient(135deg,#E3D6BE,#B7A180 55%,#75634B)' }}
+          role="img"
+          aria-label="Founder portrait, editorial style"
+        />
+        <div
+          className="flex flex-col justify-center gap-[16px] sm:gap-[18px] py-[56px] sm:py-[70px] px-[8%]"
+          style={{ background: 'var(--cream)' }}
+        >
+          <span className="lj-eyebrow">Our Story</span>
+          <h2 className="lj-heading text-[clamp(26px,3.4vw,44px)] leading-[1.15]">
+            Where soft meets statement.
+          </h2>
+          <p className="text-[14px] sm:text-[14.5px] leading-[1.85] max-w-[420px]" style={{ color: 'var(--ink-soft)' }}>
+            Founded by Linda Joweigha, LJ was created from a love for clean design,
+            effortless elegance, and clothing that feels as good as it looks. Fashion should
+            complement who you are — not overwhelm it.
+          </p>
+          <a
+            href="/our-story"
+            className="group mt-2.5 inline-flex items-center gap-3 text-[11px] tracking-[0.24em] uppercase border-b border-current pb-1.5 w-fit hover:tracking-[0.32em] hover:gap-4 hover:opacity-70 transition-all"
+          >
+            Read Our Story
+            <span className="inline-block transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </a>
+        </div>
+      </section>
+
+      {/* GALLERY — editorial mosaic of lifestyle and product shots.
+          Clicking any image opens a full-screen modal lightbox that
+          captures the dynamism of the image with a scale-in animation,
+          caption, and prev/next navigation. */}
+      <section id="gallery" className="lj-fade-up py-[80px] sm:py-[120px] px-[5vw]" style={{ background: 'var(--cream)' }}>
+        <div className="text-center mb-12 sm:mb-16">
+          <span className="lj-eyebrow block mb-3.5">Gallery</span>
+          <h2 className="lj-heading text-[clamp(28px,4vw,52px)] mb-4">In Real Life.</h2>
+          <p
+            className="max-w-[480px] mx-auto text-[14px] sm:text-[14.5px] leading-[1.8] px-2"
+            style={{ color: 'var(--ink-soft)' }}
+          >
+            A glimpse of LJ pieces as they live in the world — styled, worn, and
+            captured in the everyday. Tap any image to view in full.
+          </p>
+        </div>
+
+        {/* Mosaic grid — 4 images in an asymmetric editorial layout.
+            Desktop: 4 columns with images 1 & 3 spanning 2 rows (tall),
+            images 2 & 4 spanning 1 row (shorter).
+            Mobile: 2 columns, all equal height. */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 max-w-[1200px] mx-auto md:auto-rows-[180px] sm:auto-rows-[220px]">
+          {galleryImages.map((img, i) => (
+            <button
+              key={img.src}
+              type="button"
+              onClick={() => setGalleryIndex(i)}
+              className={`group relative overflow-hidden aspect-[3/4] md:aspect-auto block cursor-zoom-in ${i === 0 || i === 2 ? 'md:row-span-2' : ''}`}
+              aria-label={`Open gallery image ${i + 1}: ${img.caption}`}
+            >
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                sizes="(max-width: 768px) 50vw, 25vw"
+                quality={90}
+                loading="lazy"
+                className="object-cover object-center transition-transform duration-[900ms] ease-out group-hover:scale-105"
+              />
+              <div
+                className="pointer-events-none absolute inset-0 opacity-50 transition-opacity duration-500 group-hover:opacity-80"
+                style={{ background: 'linear-gradient(180deg, var(--cream) 0%, transparent 25%, transparent 75%, var(--cream-deep) 100%)' }}
+                aria-hidden="true"
+              />
+              {/* Hover affordance — "View" hint */}
+              <div className="pointer-events-none absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                <span className="text-[10px] tracking-[0.32em] uppercase text-[var(--ink)] px-4 py-2 backdrop-blur-sm" style={{ background: 'rgba(248,243,234,0.88)' }}>
+                  View
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* GALLERY MODAL — full-screen lightbox.
+          Renders when galleryIndex is not null. Features:
+          - Dark blurred backdrop with fade-in animation
+          - Image with a dynamic scale-in animation
+          - Caption + subcaption
+          - Prev / Next navigation buttons (circular, edges of screen)
+          - Close button (top-right)
+          - Keyboard: Escape to close, Arrow keys to navigate
+          - Click backdrop to close
+          - Body scroll locked while open */}
+      {galleryIndex !== null && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8 lj-modal-backdrop"
+          style={{ background: 'rgba(20,16,12,0.92)', backdropFilter: 'blur(8px)' }}
+          onClick={closeGallery}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Gallery image ${galleryIndex + 1} of ${galleryImages.length}: ${galleryImages[galleryIndex].caption}`}
+        >
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={closeGallery}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 z-[102] w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/80 hover:text-white transition-colors"
+            aria-label="Close gallery"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+
+          {/* Previous button */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            className="absolute left-2 sm:left-6 z-[102] w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+            aria-label="Previous image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          {/* Next button */}
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            className="absolute right-2 sm:right-6 z-[102] w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center text-white/60 hover:text-white transition-colors"
+            aria-label="Next image"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+
+          {/* Image + caption container — stopPropagation so clicks here don't close.
+              Touch + mouse swipe/drag handlers on this container drive gallery
+              navigation on both mobile (touch) and desktop (mouse drag). */}
+          <div
+            className="relative z-[101] max-w-[90vw] max-h-[90vh] flex flex-col items-center gap-4 select-none"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onMouseDown={onMouseDown}
+            style={{ cursor: 'grab' }}
+          >
+            {/* The image — large, dynamic, with scale-in animation.
+                Key forces re-mount on navigation so the animation replays.
+                During a drag, the image is offset by touchDelta (px) for
+                live visual feedback, with a subtle opacity fade. */}
+            <div
+              key={galleryIndex}
+              className="lj-modal-image relative w-full flex items-center justify-center"
+              style={{
+                maxHeight: '78vh',
+                transform: touchDelta !== 0 ? `translateX(${touchDelta}px)` : undefined,
+                opacity: touchDelta !== 0 ? Math.max(0.5, 1 - Math.abs(touchDelta) / 300) : undefined,
+                transition: touchDelta === 0 ? 'transform 0.3s ease-out, opacity 0.3s ease-out' : 'none',
+              }}
+            >
+              <Image
+                src={galleryImages[galleryIndex].src}
+                alt={galleryImages[galleryIndex].alt}
+                width={800}
+                height={1200}
+                quality={100}
+                className="w-auto h-auto max-w-full max-h-[78vh] object-contain pointer-events-none"
+                style={{ filter: 'drop-shadow(0 20px 60px rgba(0,0,0,0.5))' }}
+                draggable={false}
+                priority
+              />
+            </div>
+
+            {/* Caption */}
+            <div className="text-center text-white">
+              <p className="lj-heading text-[20px] sm:text-[24px] mb-1">
+                {galleryImages[galleryIndex].caption}
+              </p>
+              <p className="text-[11px] sm:text-[12px] tracking-[0.18em] uppercase text-white/60">
+                {galleryImages[galleryIndex].subcaption}
+              </p>
+              <p className="mt-3 text-[10px] tracking-[0.22em] uppercase text-white/40">
+                {galleryIndex + 1} / {galleryImages.length}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CLOSING — bold LJ watermark behind the call-to-action, matching
+          the hero treatment. Watermark sits behind the text content with a
+          dark radial spotlight for contrast. */}
+      <section className="lj-fade-up relative min-h-[78vh] sm:min-h-[88vh] flex items-center justify-center text-center overflow-hidden">
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(90% 70% at 50% 100%, rgba(255,255,255,0.12), transparent 60%), linear-gradient(160deg,#DACBAA,#B39D7A 45%,#6F5D48 90%)',
+          }}
+          role="img"
+          aria-label="Closing full-width lifestyle image"
+        />
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(0deg, rgba(15,12,9,0.55), transparent 55%)' }}
+        />
+        {/* Bold LJ watermark — centered, with dark radial backdrop */}
+        <div
+          className="absolute z-[1] pointer-events-none flex items-center justify-center inset-0"
+          aria-hidden="true"
+        >
+          <div
+            className="absolute"
+            style={{
+              width: 'clamp(260px,42vw,560px)',
+              height: 'clamp(260px,42vw,560px)',
+              borderRadius: '50%',
+              background:
+                'radial-gradient(circle, rgba(20,16,12,0.45) 0%, rgba(20,16,12,0.22) 50%, rgba(20,16,12,0) 72%)',
+            }}
+          />
+          <div
+            style={{
+              filter:
+                'drop-shadow(0 4px 18px rgba(0,0,0,0.55)) drop-shadow(0 1px 4px rgba(0,0,0,0.45))',
+            }}
+            className="relative flex items-center justify-center opacity-90"
+          >
+            <LjLogo
+              variant="light"
+              size={320}
+              alt=""
+              className="w-[clamp(180px,30vw,400px)] h-[clamp(180px,30vw,400px)] max-w-[70vw] max-h-[60vh]"
+            />
+          </div>
+        </div>
+        <div className="relative z-[2] text-white px-[6vw]">
+          <span className="lj-script block mb-1.5 text-[clamp(32px,6vw,68px)]">
+            Your style. Your story.
+          </span>
+          <h2
+            className="text-[clamp(18px,2.6vw,28px)] tracking-[0.14em] font-normal mb-[18px] uppercase"
+            style={{ fontFamily: 'var(--font-jost)' }}
+          >
+            Your LJ.
+          </h2>
+          <p className="text-[14px] sm:text-[14.5px] mb-[30px] sm:mb-[34px]" style={{ color: '#F2EADA' }}>
+            Discover pieces made to become part of your everyday story.
+          </p>
+          <a
+            href="https://www.instagram.com/lindajoweigha?igsh=ZmFoaTA4eTRveTBw&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block px-[36px] sm:px-[42px] py-4 border border-white text-[11px] tracking-[0.24em] sm:tracking-[0.26em] uppercase hover:bg-white hover:text-[var(--ink)] transition-all"
+          >
+            Shop LJ Fashion
+          </a>
+        </div>
+      </section>
+
+      {/* CONTACT / FOOTER — dark ink background with the LIGHT logo variant.
+          Includes direct links to Instagram, TikTok, and WhatsApp. */}
+      <footer
+        id="contact"
+        className="text-center pt-[60px] sm:pt-[80px] pb-[30px] px-[6vw]"
+        style={{ background: 'var(--ink)', color: '#DCD3C2' }}
+      >
+        <div className="mx-auto mb-5 flex items-center justify-center">
+          <LjLogo variant="light" size={44} alt="LJ Fashion" />
+        </div>
+
+        {/* Contact heading */}
+        <span className="block text-[11px] tracking-[0.32em] uppercase mb-3" style={{ color: '#C9B896' }}>
+          Get in Touch
+        </span>
+        <h2 className="lj-heading text-[clamp(24px,3vw,36px)] mb-3 font-normal" style={{ color: '#FFFFFF' }}>
+          Let&apos;s talk fashion.
+        </h2>
+        <p className="max-w-[420px] mx-auto mb-10 text-[14px] leading-[1.85]" style={{ color: '#B8AD97' }}>
+          Follow the journey, DM for enquiries, or chat with us directly — we&apos;d love to hear from you.
+        </p>
+
+        {/* Social links */}
+        <div className="flex flex-wrap justify-center gap-x-4 sm:gap-x-6 gap-y-3 mb-10 max-w-[600px] mx-auto">
+          {/* Instagram */}
+          <a
+            href="https://www.instagram.com/lindajoweigha?igsh=ZmFoaTA4eTRveTBw&utm_source=qr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 px-6 py-3.5 border border-[#3A3532] hover:border-[#DCD3C2] transition-colors"
+            aria-label="Follow LJ Fashion on Instagram"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className="text-[#DCD3C2] group-hover:text-white transition-colors"
+              aria-hidden="true"
+            >
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+            </svg>
+            <span className="text-[11px] tracking-[0.22em] uppercase text-[#B8AD97] group-hover:text-white transition-colors">
+              Instagram
+            </span>
+          </a>
+
+          {/* TikTok */}
+          <a
+            href="https://www.tiktok.com/@lindajoweigha"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 px-6 py-3.5 border border-[#3A3532] hover:border-[#DCD3C2] transition-colors"
+            aria-label="Follow LJ Fashion on TikTok"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="text-[#DCD3C2] group-hover:text-white transition-colors"
+              aria-hidden="true"
+            >
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+            </svg>
+            <span className="text-[11px] tracking-[0.22em] uppercase text-[#B8AD97] group-hover:text-white transition-colors">
+              TikTok
+            </span>
+          </a>
+
+          {/* WhatsApp */}
+          <a
+            href="https://wa.me/2348131148006"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group inline-flex items-center gap-3 px-6 py-3.5 border border-[#3A3532] hover:border-[#DCD3C2] transition-colors"
+            aria-label="Chat with LJ Fashion on WhatsApp"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="text-[#DCD3C2] group-hover:text-white transition-colors"
+              aria-hidden="true"
+            >
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+            </svg>
+            <span className="text-[11px] tracking-[0.22em] uppercase text-[#B8AD97] group-hover:text-white transition-colors">
+              WhatsApp
+            </span>
+          </a>
+        </div>
+
+        {/* Quick nav links */}
+        <div
+          className="flex justify-center gap-x-6 gap-y-3 flex-wrap text-[10px] sm:text-[11px] tracking-[0.2em] uppercase mb-[26px] max-w-[600px] mx-auto"
+          style={{ color: '#B8AD97' }}
+        >
+          <a href="#bestsellers" className="hover:text-white transition-colors">Bestsellers</a>
+          <a href="#shop" className="hover:text-white transition-colors">Shop</a>
+          <a href="/our-story" className="hover:text-white transition-colors">Our Story</a>
+          <a href="#gallery" className="hover:text-white transition-colors">Gallery</a>
+        </div>
+
+        <div className="text-[11px] tracking-[0.08em]" style={{ color: '#8A8072' }}>
+          © 2026 LJ Fashion. Designed beyond the trend.
+        </div>
+      </footer>
+
+      {/* Page-tear transition overlay — renders on top of everything when
+          a bestseller "View Piece" is clicked, plays the tear animation,
+          then navigates to the product page. */}
+      <PageTearTransition active={tearActive} onComplete={handleTearComplete} />
+    </main>
+  );
+}
